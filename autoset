@@ -1,0 +1,136 @@
+local UIS = game:GetService("UserInputService")
+local virtualUser = game:GetService('VirtualUser')
+local player = game.Players.LocalPlayer
+local HRP = player.Character.HumanoidRootPart
+
+local keyPowers = {Enum.KeyCode.KeypadZero, Enum.KeyCode.KeypadOne, Enum.KeyCode.KeypadTwo, Enum.KeyCode.KeypadThree, Enum.KeyCode.KeypadFour, Enum.KeyCode.KeypadFive, Enum.KeyCode.KeypadSix, Enum.KeyCode.KeypadSeven, Enum.KeyCode.KeypadEight, Enum.KeyCode.KeypadNine}
+local setMods = {Enum.KeyCode.Up, Enum.KeyCode.Down, Enum.KeyCode.Left, Enum.KeyCode.Right} -- Jump, Stop, Bump, Net
+local trueMods = {"j", "s", "b", "n"}
+local leftpowerListen = false
+local rightpowerListen = false
+local leftmodListen = false
+local rightmodListen = false
+local leftCode = ""
+local leftPower = ""
+local rightCode = ""
+local rightPower = ""
+local leftJump = false
+local rightJump = false
+local stop = false
+local leftAim = -22
+local rightAim = 22
+
+UIS.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.KeypadPlus then
+        leftpowerListen = true
+        leftmodListen = true
+        rightpowerListen = false
+        rightmodListen = false
+        leftCode = ""
+        leftPower = ""
+        leftJump = false
+    elseif input.KeyCode == Enum.KeyCode.KeypadMinus then
+        rightpowerListen = true
+        rightmodListen = true
+        leftpowerListen = false
+        leftmodListen = false
+        rightCode = ""
+        rightPower = ""
+        rightJump = false
+    end
+
+    if input.KeyCode == Enum.KeyCode.KeypadMultiply then
+        leftAim = leftAim * -1
+        rightAim = rightAim * -1
+    end
+
+    if table.find(keyPowers, input.KeyCode) and leftpowerListen == true then
+        leftPower = leftPower .. tostring((table.find(keyPowers, input.KeyCode)) - 1)
+    elseif table.find(keyPowers, input.KeyCode) and rightpowerListen == true then
+        rightPower = rightPower .. tostring((table.find(keyPowers, input.KeyCode)) - 1)
+    end
+    
+    if table.find(setMods, input.KeyCode) and leftmodListen == true then
+        leftCode = leftCode .. trueMods[table.find(setMods, input.KeyCode)]
+    elseif table.find(setMods, input.KeyCode) and rightmodListen == true then
+        rightCode = rightCode .. trueMods[table.find(setMods, input.KeyCode)]
+    end 
+
+    if input.KeyCode == Enum.KeyCode.KeypadPeriod then
+        leftpowerListen, leftmodListen, rightpowerListen, rightmodListen = false
+    end
+
+    if input.KeyCode == Enum.KeyCode.LeftBracket then
+        leftpowerListen, leftmodListen, rightpowerListen, rightmodListen = false
+        powerSet(leftPower)
+        stopMatch(leftCode)
+        netMatch(leftCode, leftAim)
+        jumpMatch(leftCode)
+        wait(0.1)
+        bumpMatch(leftCode)
+    elseif input.KeyCode == Enum.KeyCode.RightBracket then
+        leftpowerListen, leftmodListen, rightpowerListen, rightmodListen = false
+        powerSet(rightPower)
+        stopMatch(rightCode)
+        netMatch(rightCode, rightAim)
+        jumpMatch(rightCode)
+        wait(0.1)
+        bumpMatch(rightCode)
+    end
+end)
+
+function powerSet(pwr)
+    for i = 1, 15 do
+        virtualUser:TypeKey("0x71")
+    end
+    if tonumber(pwr) > 1 then
+        for i = 1, tonumber(pwr) - 1 do
+            virtualUser:TypeKey("0x65")
+        end
+    end
+end
+
+function stopMatch(code)
+    if code:match("s") and stop == false then
+        virtualUser:TypeKey("0x62")
+        stop = true
+    elseif not code:match("s") and stop == true then
+        virtualUser:TypeKey("0x62")
+        stop = false
+    end
+end
+
+function jumpMatch(code)
+    if code:match("j") then
+        virtualUser:TypeKey("0x77")
+        virtualUser:TypeKey("0x73")
+        virtualUser:TypeKey("0x61")
+        virtualUser:TypeKey("0x64")
+        wait(0.01)
+        keypress(0x20)
+        wait(0.00001)
+        keyrelease(0x20)
+    end
+end
+
+function netMatch(code, coord)
+    if not code:match("n") then
+        player.Character.Humanoid.AutoRotate = false
+        HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(coord, HRP.Position.Y, 0))
+    elseif code:match("n") then
+        player.Character.Humanoid.AutoRotate = false
+        HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
+    end
+end
+
+function bumpMatch(code)
+    if code:match("b") then
+        virtualUser:ClickButton1(Vector2.new())
+        wait(1)
+        player.Character.Humanoid.AutoRotate = true
+    else
+        virtualUser:TypeKey("0x66")
+        wait(1)
+        player.Character.Humanoid.AutoRotate = true
+    end
+end
