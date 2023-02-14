@@ -1,0 +1,111 @@
+--LUA FUNCTIONS
+local clamp = math.clamp
+local round = math.round
+local abs = math.abs
+local huge = math.huge
+local random = math.random
+local floor = math.floor
+local rad = math.rad
+
+local match = string.match
+local sub = string.sub
+
+local v3 = Vector3.new
+local v2 = Vector2.new
+local u2 = UDim2.new
+local CF = CFrame.new
+local RGB = Color3.fromRGB
+local tween = TweenInfo.new
+
+local drawing = Drawing.new
+
+local Space = game:GetService("Workspace")
+local Players = game:GetService("Players")
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+local Camera = Space.CurrentCamera
+local RES = game:GetService("ReplicatedStorage")
+
+local RS = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local LIGHT = game:GetService("Lighting")
+
+local filterTable = {}
+
+local rcParams2 = RaycastParams.new()
+rcParams2.FilterDescendantsInstances = {}
+rcParams2.FilterType = Enum.RaycastFilterType.Whitelist
+
+local sus = Vector3.new(0, 0, 0)
+
+local ESP_API = {}
+function ESP_API.NewLine(info)
+    local l = drawing("Line")
+    l.Visible = info.Visible or false
+    l.Transparency = info.Transparency or 1
+    l.Color = info.Color or RGB(0,0,0) 
+
+    l.Thickness = info.Thickness or 1
+    l.From = v2(0,0)
+    l.To = v2(0,0)
+    return l
+end
+
+
+function ESP_API.AddPlayer(plr)
+    repeat wait() until plr.Character ~= nil and plr.Character:FindFirstChildOfClass("Humanoid")
+
+    local plr_name = plr.Name
+    local viewTracer = ESP_API.NewLine({Color = RGB(186, 85, 211), Thickness = 5})
+
+    local c
+    c = RS.RenderStepped:Connect(function()
+        if Player.Character ~= nil and plr.Character ~= nil and plr.Character:FindFirstChildOfClass("Humanoid") and plr.Character:FindFirstChildOfClass("Humanoid").Health > 0 and plr.TeamColor == Player.TeamColor and plr.Character.Humanoid.FloorMaterial == Enum.Material.Air and plr.Character.HumanoidRootPart.Position.Y > 3 then
+            local rcParams = RaycastParams.new()
+            rcParams.FilterDescendantsInstances = {filterTable}
+            rcParams.FilterType = Enum.RaycastFilterType.Whitelist
+            local root_part = plr.Character:FindFirstChild("HumanoidRootPart") or plr.Character.PrimaryPart
+            local Hmnd = plr.Character:FindFirstChildWhichIsA("Humanoid")
+            local direction = root_part.CFrame.LookVector * 20
+            local rcResult = workspace:Raycast(root_part.Position, direction, rcParams)
+            if rcResult then
+                local reflection = direction - (2 * direction:Dot(rcResult.Normal) * rcResult.Normal)
+                local rayEnd = rcResult.Position + reflection
+                local trueStart = Vector3.new(rcResult.Position.X, sus.Y, rcResult.Position.Z)
+                local trueEnd = Vector3.new(rayEnd.X, sus.Y, rayEnd.Z)
+                local startPos, vis = Camera:WorldToViewportPoint(trueStart)
+                local endPos = Camera:WorldToViewportPoint(trueEnd)
+                viewTracer.From = v2(startPos.X, startPos.Y)
+                viewTracer.To = v2(endPos.X, endPos.Y)
+                viewTracer.Visible = true
+                print(rcResult)
+            else
+                viewTracer.Visible = false
+            end
+        else
+            viewTracer.Visible = false
+            if Players:FindFirstChild(plr_name) == nil then
+                viewTracer:Remove()
+                c:Disconnect()
+            end
+        end
+    end)
+end
+
+do
+    local t = Players:GetChildren()
+    for i = 1, #t do
+        local v = t[i]
+        if v.Name ~= Player.Name then
+            coroutine.wrap(ESP_API.AddPlayer)(v)
+            table.insert(filterTable, v.Character.BlockHitbox)
+        end
+    end
+end
+
+Players.ChildAdded:Connect(function(v)
+    if v.Name ~= Player.Name then
+        coroutine.wrap(ESP_API.AddPlayer)(v)
+    end
+    table.insert(filterTable, v.Character.BlockHitbox)
+end)
