@@ -1,0 +1,52 @@
+local UIS = game:GetService("UserInputService")
+local virtualUser = game:GetService('VirtualUser')
+local player = game.Players.LocalPlayer
+local HRP = player.Character.HumanoidRootPart
+local curve = 1
+local direction = 0
+
+game.Workspace.ServeLF.Size = Vector3.new(0.001, 1, 0.001)
+game.Workspace.BackrowLF.Size = Vector3.new(0.001, 1, 0.001)
+
+UIS.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Semicolon then
+        flick()
+    elseif input.KeyCode == Enum.KeyCode.Six then
+        direction = 15
+    elseif input.KeyCode == Enum.KeyCode.Seven then
+        direction = 7
+    elseif input.KeyCode == Enum.KeyCode.Eight then
+        direction = 0
+    elseif input.KeyCode == Enum.KeyCode.Nine then
+        direction = -7
+    elseif input.KeyCode == Enum.KeyCode.Zero then
+        direction = -13
+    elseif input.KeyCode == Enum.KeyCode.Four then
+        curveSpawn()
+    elseif input.KeyCode == Enum.KeyCode.Minus then
+        curve = 1
+    elseif input.KeyCode == Enum.KeyCode.Equals then
+        curve = -1
+    elseif input.KeyCode == Enum.KeyCode.Five then
+        if curve == 1 then
+            direction = -20
+        elseif curve == -1 then
+            direction = 24
+        end
+    end
+end)
+
+function curveSpawn()
+    local args = {
+        [1] = "SpawnBall",
+        [2] = {[1] = "ServeToss", [2] = 2, [3] = curve}
+    }
+    game:GetService("ReplicatedStorage").Remotes.PlayerAction:FireServer(unpack(args))
+end
+
+function flick()
+    player.Character.Humanoid.AutoRotate = false    
+    HRP.CFrame *= CFrame.Angles(0, math.rad(direction), 0)
+    wait(1)
+    player.Character.Humanoid.AutoRotate = true
+end
