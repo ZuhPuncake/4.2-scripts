@@ -1,0 +1,312 @@
+local teamSide = -1
+local spikeMode = 1
+
+local PlayerModule = require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"))
+local Controls = PlayerModule:GetControls()
+
+local player = game.Players.LocalPlayer
+local Players = game:GetService("Players")
+local HRP = player.Character.HumanoidRootPart
+local UIS = game:GetService("UserInputService")
+
+local indicatorFolder = Instance.new("Folder", game:GetService("Workspace"))
+indicatorFolder.Name = "indic"
+local indicators = game.Workspace.indic
+
+local indicatorFolder2 = Instance.new("Folder", game:GetService("Workspace"))
+indicatorFolder2.Name = "indic2"
+local indicators2 = game.Workspace.indic2
+
+local filterTable = {}
+local indicatorsArray = {}
+local playersArray = {}
+local possibleSpots = {}
+local farthestPart = nil
+local farthestDistance = nil
+
+local ovParams = OverlapParams.new()
+ovParams.FilterDescendantsInstances = {indicators}
+ovParams.CollisionGroup = "Default"
+ovParams.FilterType = Enum.RaycastFilterType.Whitelist
+ovParams.MaxParts = 0
+
+local ovParams2 = OverlapParams.new()
+ovParams2.FilterDescendantsInstances = {indicators2}
+ovParams2.CollisionGroup = "Default"
+ovParams2.FilterType = Enum.RaycastFilterType.Whitelist
+ovParams2.MaxParts = 0
+
+function sidePicker()
+    for i = 0, 24, 2 do
+        for j = 1, 47, 2 do
+            local part1 = Instance.new("Part", indicators)
+            part1.Name = "indicator"
+            part1.Anchored = true
+            part1.CanCollide = false
+            part1.Shape = Enum.PartType.Ball
+            part1.BrickColor = BrickColor.new(21)
+            part1.Material = Enum.Material.Neon
+            part1.Transparency = 1
+            part1.Size = Vector3.new(2, 0.5, 2)
+            part1.Position = Vector3.new(i, 0, j)
+            table.insert(indicatorsArray, part1)
+
+            local part2 = Instance.new("Part", indicators)
+            part2.Name = "indicator"
+            part2.Anchored = true
+            part2.CanCollide = false
+            part2.Shape = Enum.PartType.Ball
+            part2.BrickColor = BrickColor.new(21)
+            part2.Material = Enum.Material.Neon
+            part2.Transparency = 1
+            part2.Size = Vector3.new(2, 0.5, 2)
+            part2.Position = Vector3.new(-i, 0, j)
+            table.insert(indicatorsArray, part2)
+        end
+    end
+    for i = 0, 24, 2 do
+        for j = -1, -47, -2 do
+            local part3 = Instance.new("Part", indicators2)
+            part3.Name = "indicator"
+            part3.Anchored = true
+            part3.CanCollide = false
+            part3.Shape = Enum.PartType.Ball
+            part3.BrickColor = BrickColor.new(21)
+            part3.Material = Enum.Material.Neon
+            part3.Transparency = 1
+            part3.Size = Vector3.new(2, 0.5, 2)
+            part3.Position = Vector3.new(i, 0, j)
+            table.insert(indicatorsArray, part3)
+
+            local part4 = Instance.new("Part", indicators2)
+            part4.Name = "indicator"
+            part4.Anchored = true
+            part4.CanCollide = false
+            part4.Shape = Enum.PartType.Ball
+            part4.BrickColor = BrickColor.new(21)
+            part4.Material = Enum.Material.Neon
+            part4.Transparency = 1
+            part4.Size = Vector3.new(2, 0.5, 2)
+            part4.Position = Vector3.new(-i, 0, j)
+            table.insert(indicatorsArray, part4)
+        end
+    end
+end
+
+do
+    sidePicker()
+end
+
+UIS.InputBegan:Connect(function(input) --Best way to do this
+    if input.KeyCode == Enum.KeyCode.V then
+        if teamSide == 1 then
+            if spikeMode == 1 then
+                ididathing(ovParams)
+            else
+                ididathing2(ovParams)
+            end
+        elseif teamSide == -1 then
+            if spikeMode == 1 then
+                ididathing(ovParams2)
+            else
+                ididathing2(ovParams2)
+            end
+        end
+    elseif input.KeyCode == Enum.KeyCode.KeypadMultiply then
+        teamSide *= -1
+    elseif input.KeyCode == Enum.KeyCode.Two then
+        spikeMode *= -1
+    elseif input.KeyCode == Enum.KeyCode.R then
+        rebound()
+    end
+end)
+
+function ididathing(tempParams)
+        local longin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 48 + tonumber(math.abs(HRP.Position.Z)), tempParams)
+        local longout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 45 + tonumber(math.abs(HRP.Position.Z)), tempParams)
+        local shortin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 24, tempParams)
+        local shortout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 19, tempParams)
+        local netout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, (2 * tonumber(math.abs(HRP.Position.Z))) - 2), tempParams)
+        for i, v in pairs(longin) do
+            v.BrickColor = BrickColor.new(37)
+        end
+        for i, v in pairs(longout) do
+            v.BrickColor = BrickColor.new(21)
+        end
+        for i, v in pairs(shortin) do
+            v.BrickColor = BrickColor.new(37)
+        end
+        for i, v in pairs(shortout) do
+            v.BrickColor = BrickColor.new(21)
+        end
+        for i, v in pairs(netout) do
+            v.BrickColor = BrickColor.new(21)
+        end
+        for i, v in pairs(longin) do
+            if v.BrickColor == BrickColor.new(37) then
+                table.insert(possibleSpots, v)
+            end
+        end
+        farthestFinder(possibleSpots, playersArray) 
+        farthestPart.BrickColor = BrickColor.new(1)
+        keypress(0x57)
+        keypress(0x41)
+        keypress(0x53)
+        keypress(0x44)
+        keypress(0x43)
+        wait(0.01)
+        HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(farthestPart.Position.X, HRP.Position.Y, farthestPart.Position.Z))
+        keypress(0x20)
+        wait(0.01)
+        keyrelease(0x57)
+        keyrelease(0x41)
+        keyrelease(0x53)
+        keyrelease(0x44)
+        keyrelease(0x43)
+        player.Character.Humanoid.AutoRotate = false
+        if findDistance(farthestPart, player) < 26 then
+            keypress(0x57)
+            wait(0.05)
+            keyrelease(0x57)
+        end
+        table.clear(possibleSpots)
+        keyrelease(0x20)
+        player.Character.Humanoid.AutoRotate = true
+        for i, v in pairs(longin) do
+            v.BrickColor = BrickColor.new(21)
+        end
+        local farthestPart = nil
+        local farthestDistance = nil
+        longin = {}
+        longout = {}
+        shortin = {}
+        shortout = {}
+end
+
+function ididathing2(tempParams)
+        player.Character.Humanoid.HipHeight = 4.3
+        local longin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 48 + tonumber(math.abs(HRP.Position.Z)), tempParams)
+        local longout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 45 + tonumber(math.abs(HRP.Position.Z)), tempParams)
+        local shortin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 28, tempParams)
+        local shortout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 24, tempParams)
+
+        for i, v in pairs(longin) do
+            v.BrickColor = BrickColor.new(37)
+        end
+        for i, v in pairs(longout) do
+            v.BrickColor = BrickColor.new(21)
+        end
+        for i, v in pairs(shortin) do
+            v.BrickColor = BrickColor.new(37)
+        end
+        for i, v in pairs(shortout) do
+            v.BrickColor = BrickColor.new(21)
+        end
+        for i, v in pairs(longin) do
+            if v.BrickColor == BrickColor.new(37) then
+                table.insert(possibleSpots, v)
+            end
+        end
+        farthestFinder(possibleSpots, playersArray) 
+        farthestPart.BrickColor = BrickColor.new(1)
+        keypress(0x57)
+        keypress(0x41)
+        keypress(0x53)
+        keypress(0x44)
+        keypress(0x43)
+        wait(0.01)
+        HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(farthestPart.Position.X, HRP.Position.Y, farthestPart.Position.Z))
+        keypress(0x20)
+        local args = {[1] = "Jump", [2] = CFrame.new(HRP.Position) * CFrame.Angles(-0, 0, -0)}
+        game:GetService("ReplicatedStorage").Remotes.CreateEffect:FireServer(unpack(args))
+        wait(0.01)
+        keyrelease(0x57)
+        keyrelease(0x41)
+        keyrelease(0x53)
+        keyrelease(0x44)
+        keyrelease(0x43)
+        player.Character.Humanoid.HipHeight = 2
+        player.Character.Humanoid.AutoRotate = false
+        if findDistance(farthestPart, player) < 30 then
+            keypress(0x57)
+            wait(0.05)
+            keyrelease(0x57)
+        end
+        table.clear(possibleSpots)
+        keyrelease(0x20)
+        player.Character.Humanoid.AutoRotate = true
+        for i, v in pairs(longin) do
+            v.BrickColor = BrickColor.new(21)
+        end
+        local farthestPart = nil
+        local farthestDistance = nil
+        longin = {}
+        longout = {}
+        shortin = {}
+        shortout = {}
+end
+
+do
+    playersArray = Players:GetChildren()
+    for _, v in pairs(Players:GetChildren()) do
+        table.insert(filterTable, v.Character.BlockHitbox)
+    end
+end
+
+Players.ChildAdded:Connect(function(v)
+    table.insert(playersArray, v)
+    table.insert(filterTable, v.Character.BlockHitbox)
+end)
+
+Players.PlayerRemoving:Connect(function(v)
+    local found = table.find(playersArray, v)
+    if found then
+        table.remove(playersArray, found)
+    end
+end)
+
+function findDistance(spot, plr)
+    print(math.sqrt(((plr.Character.HumanoidRootPart.Position.X - spot.Position.X)^2) + ((plr.Character.HumanoidRootPart.Position.Z - spot.Position.Z)^2)))
+    return math.sqrt(((plr.Character.HumanoidRootPart.Position.X - spot.Position.X)^2) + ((plr.Character.HumanoidRootPart.Position.Z - spot.Position.Z)^2))
+end
+
+function farthestFinder(spods, playas)
+    farthestDistance = nil
+    for i, v in pairs(spods) do
+        local closestDistance = nil
+        for j, u in pairs(playas) do
+            if u.TeamColor ~= player.TeamColor and u.TeamColor ~= BrickColor.new("White")then
+                local currentDistance = findDistance(v, u)
+                if farthestPart ~= nil and closestDistance ~=nil then
+                    if currentDistance < closestDistance then
+                        closestDistance = currentDistance
+                    end
+                elseif farthestPart ~= nil and closestDistance == nil then
+                    closestDistance = currentDistance
+                elseif farthestPart == nil then
+                    closestDistance = currentDistance
+                end
+            end
+        end
+        if farthestDistance == nil then
+            farthestDistance = closestDistance
+            farthestPart = v
+        elseif farthestDistance ~= nil and closestDistance > farthestDistance then
+            farthestPart = v
+        end
+    end
+end
+
+function rebound()
+    local rcParams = RaycastParams.new()
+    rcParams.FilterDescendantsInstances = {filterTable}
+    rcParams.FilterType = Enum.RaycastFilterType.Whitelist
+    local origin = Vector3.new(HRP.Position.X, HRP.Position.Y, HRP.Position.Z)
+    local direction = HRP.CFrame.LookVector * 15
+    local rcResult = workspace:Raycast(origin, direction, rcParams)
+    if rcResult then
+        keypress(0x58)
+        wait(0.001)
+        keyrelease(0x58)
+    end
+end
