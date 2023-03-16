@@ -126,8 +126,8 @@ function ididathing(tempParams)
         local longout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 45 + tonumber(math.abs(HRP.Position.Z)), tempParams)
         local midlongin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 42, tempParams)
         local midlongout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 39, tempParams)
-        local midin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 35, tempParams)
-        local midout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 32, tempParams)
+        local midin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 36, tempParams)
+        local midout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 33, tempParams)
         local shortin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 24, tempParams)
         local shortout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 19, tempParams)
         local netout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, (2 * tonumber(math.abs(HRP.Position.Z))) - 2), tempParams)
@@ -184,7 +184,7 @@ function ididathing(tempParams)
             keypress(0x57)
             wait(0.05)
             keyrelease(0x57)
-        elseif findDistance(farthestPart, player) < 37 then
+        elseif findDistance(farthestPart, player) < 38 then
             HRP.Tilt.D = 300
             HRP.Tilt.P = 800
             keypress(0x57)
