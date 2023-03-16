@@ -164,7 +164,6 @@ UIS.InputBegan:Connect(function(input) --Best way to do this
                 keyrelease(0x57)
             end
         end
-        wait(1)
         HRP.Tilt.D = 500
         HRP.Tilt.P = 3000
     end
@@ -258,7 +257,6 @@ function ididathing(tempParams)
         longout = {}
         shortin = {}
         shortout = {}
-        wait(1.5)
         HRP.Tilt.D = 500
         HRP.Tilt.P = 3000
 end
