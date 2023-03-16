@@ -118,6 +118,55 @@ UIS.InputBegan:Connect(function(input) --Best way to do this
         spikeMode *= -1
     elseif input.KeyCode == Enum.KeyCode.R then
         rebound()
+    elseif input.KeyCode == Enum.KeyCode.F3 then
+        if teamSide == -1 then
+            HRP.Tilt.D = 300
+            HRP.Tilt.P = 1700
+            player.Character.Humanoid.AutoRotate = false
+            HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
+            if HRP.Position.X > 0 then
+                HRP.CFrame *= CFrame.Angles(0, math.rad(70), 0)
+                keypress(0x20)
+                wait(0.1)
+                keypress(0x57)
+                wait(0.5)
+                keyrelease(0x20)
+                keyrelease(0x57)
+            else
+                HRP.CFrame *= CFrame.Angles(0, math.rad(-70), 0)
+                keypress(0x20)
+                wait(0.1)
+                keypress(0x57)
+                wait(0.5)
+                keyrelease(0x20)
+                keyrelease(0x57)
+            end
+        else
+            HRP.Tilt.D = 300
+            HRP.Tilt.P = 1700
+            player.Character.Humanoid.AutoRotate = false
+            HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
+            if HRP.Position.X < 0 then
+                HRP.CFrame *= CFrame.Angles(0, math.rad(70), 0)
+                keypress(0x20)
+                wait(0.1)
+                keypress(0x57)
+                wait(0.5)
+                keyrelease(0x20)
+                keyrelease(0x57)
+            else
+                HRP.CFrame *= CFrame.Angles(0, math.rad(-70), 0)
+                keypress(0x20)
+                wait(0.1)
+                keypress(0x57)
+                wait(0.5)
+                keyrelease(0x20)
+                keyrelease(0x57)
+            end
+        end
+        wait(1)
+        HRP.Tilt.D = 500
+        HRP.Tilt.P = 3000
     end
 end)
 
