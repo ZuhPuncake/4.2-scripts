@@ -262,7 +262,7 @@ function ididathing(tempParams)
 end
 
 function ididathing2(tempParams)
-        player.Character.Humanoid.HipHeight = 4.1
+        player.Character.Humanoid.HipHeight = 4.5
         local longin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 48 + tonumber(math.abs(HRP.Position.Z)), tempParams)
         local longout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 45 + tonumber(math.abs(HRP.Position.Z)), tempParams)
         local shortin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 28, tempParams)
