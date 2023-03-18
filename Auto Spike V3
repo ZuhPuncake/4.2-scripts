@@ -127,17 +127,17 @@ UIS.InputBegan:Connect(function(input) --Best way to do this
             if HRP.Position.X > 0 then
                 HRP.CFrame *= CFrame.Angles(0, math.rad(70), 0)
                 keypress(0x20)
-                wait(0.1)
+                wait(0.2)
                 keypress(0x57)
-                wait(0.5)
+                wait(0.4)
                 keyrelease(0x20)
                 keyrelease(0x57)
             else
                 HRP.CFrame *= CFrame.Angles(0, math.rad(-70), 0)
                 keypress(0x20)
-                wait(0.1)
+                wait(0.2)
                 keypress(0x57)
-                wait(0.5)
+                wait(0.4)
                 keyrelease(0x20)
                 keyrelease(0x57)
             end
@@ -149,17 +149,17 @@ UIS.InputBegan:Connect(function(input) --Best way to do this
             if HRP.Position.X < 0 then
                 HRP.CFrame *= CFrame.Angles(0, math.rad(70), 0)
                 keypress(0x20)
-                wait(0.1)
+                wait(0.2)
                 keypress(0x57)
-                wait(0.5)
+                wait(0.4)
                 keyrelease(0x20)
                 keyrelease(0x57)
             else
                 HRP.CFrame *= CFrame.Angles(0, math.rad(-70), 0)
                 keypress(0x20)
-                wait(0.1)
+                wait(0.2)
                 keypress(0x57)
-                wait(0.5)
+                wait(0.4)
                 keyrelease(0x20)
                 keyrelease(0x57)
             end
