@@ -1,0 +1,769 @@
+local teamSide = -1
+local spikeMode = 1
+
+
+local player = game.Players.LocalPlayer
+local Players = game:GetService("Players")
+local HRP = player.Character.HumanoidRootPart
+local UIS = game:GetService("UserInputService")
+
+local partNameToCheck = "Ball"
+local currentBall
+local balls = {}
+local time = 0.5
+
+local indicatorFolder = Instance.new("Folder", game:GetService("Workspace"))
+indicatorFolder.Name = "indic"
+local indicators = game.Workspace.indic
+
+local indicatorFolder2 = Instance.new("Folder", game:GetService("Workspace"))
+indicatorFolder2.Name = "indic2"
+local indicators2 = game.Workspace.indic2
+
+local filterTable = {}
+local indicatorsArray = {}
+local playersArray = {}
+local possibleSpots = {}
+local farthestPart = nil
+local farthestDistance = nil
+
+local ovParams = OverlapParams.new()
+ovParams.FilterDescendantsInstances = {indicators}
+ovParams.CollisionGroup = "Default"
+ovParams.FilterType = Enum.RaycastFilterType.Whitelist
+ovParams.MaxParts = 0
+
+local ovParams2 = OverlapParams.new()
+ovParams2.FilterDescendantsInstances = {indicators2}
+ovParams2.CollisionGroup = "Default"
+ovParams2.FilterType = Enum.RaycastFilterType.Whitelist
+ovParams2.MaxParts = 0
+
+
+
+
+-- Walls Creation
+local function wallsCreation()
+    local wallsFolder = Instance.new("Folder", game:GetService("Workspace"))
+    wallsFolder.Name = "Walls"
+
+    local part1 = Instance.new("Part", game.Workspace.Walls)
+    part1.Name = "wall"
+    part1.Anchored = true
+    part1.CanCollide = false
+    part1.Shape = Enum.PartType.Block
+    part1.BrickColor = BrickColor.new(21)
+    part1.Material = Enum.Material.Neon
+    part1.Transparency = 1
+    part1.Size = Vector3.new(1, 300, 103)
+    part1.Position = Vector3.new(30, 0, 0)
+
+    local part2 = Instance.new("Part", game.Workspace.Walls)
+    part2.Name = "wall"
+    part2.Anchored = true
+    part2.CanCollide = false
+    part2.Shape = Enum.PartType.Block
+    part2.BrickColor = BrickColor.new(21)
+    part2.Material = Enum.Material.Neon
+    part2.Transparency = 1
+    part2.Size = Vector3.new(62, 300, 1)
+    part2.Position = Vector3.new(0, 0, 52)
+
+    local part3 = Instance.new("Part", game.Workspace.Walls)
+    part3.Name = "wall"
+    part3.Anchored = true
+    part3.CanCollide = false
+    part3.Shape = Enum.PartType.Block
+    part3.BrickColor = BrickColor.new(21)
+    part3.Material = Enum.Material.Neon
+    part3.Transparency = 1
+    part3.Size = Vector3.new(1, 300, 103)
+    part3.Position = Vector3.new(-30, 0, 0)
+
+    local part4 = Instance.new("Part", game.Workspace.Walls)
+    part4.Name = "wall"
+    part4.Anchored = true
+    part4.CanCollide = false
+    part4.Shape = Enum.PartType.Block
+    part4.BrickColor = BrickColor.new(21)
+    part4.Material = Enum.Material.Neon
+    part4.Transparency = 1
+    part4.Size = Vector3.new(62, 300, 1)
+    part4.Position = Vector3.new(0, 0, -52)
+end
+
+wallsCreation()
+
+local walls = game.Workspace:FindFirstChild("Walls")
+
+
+
+
+-- Side Picker (Auto Block)
+function sidePicker()
+    for i = 0, 24, 2 do
+        for j = 1, 47, 2 do
+            local part1 = Instance.new("Part", indicators)
+            part1.Name = "indicator"
+            part1.Anchored = true
+            part1.CanCollide = false
+            part1.Shape = Enum.PartType.Ball
+            part1.BrickColor = BrickColor.new(21)
+            part1.Material = Enum.Material.Neon
+            part1.Transparency = 1
+            part1.Size = Vector3.new(2, 0.5, 2)
+            part1.Position = Vector3.new(i, 0, j)
+            table.insert(indicatorsArray, part1)
+
+            local part2 = Instance.new("Part", indicators)
+            part2.Name = "indicator"
+            part2.Anchored = true
+            part2.CanCollide = false
+            part2.Shape = Enum.PartType.Ball
+            part2.BrickColor = BrickColor.new(21)
+            part2.Material = Enum.Material.Neon
+            part2.Transparency = 1
+            part2.Size = Vector3.new(2, 0.5, 2)
+            part2.Position = Vector3.new(-i, 0, j)
+            table.insert(indicatorsArray, part2)
+        end
+    end
+    for i = 0, 24, 2 do
+        for j = -1, -47, -2 do
+            local part3 = Instance.new("Part", indicators2)
+            part3.Name = "indicator"
+            part3.Anchored = true
+            part3.CanCollide = false
+            part3.Shape = Enum.PartType.Ball
+            part3.BrickColor = BrickColor.new(21)
+            part3.Material = Enum.Material.Neon
+            part3.Transparency = 1
+            part3.Size = Vector3.new(2, 0.5, 2)
+            part3.Position = Vector3.new(i, 0, j)
+            table.insert(indicatorsArray, part3)
+
+            local part4 = Instance.new("Part", indicators2)
+            part4.Name = "indicator"
+            part4.Anchored = true
+            part4.CanCollide = false
+            part4.Shape = Enum.PartType.Ball
+            part4.BrickColor = BrickColor.new(21)
+            part4.Material = Enum.Material.Neon
+            part4.Transparency = 1
+            part4.Size = Vector3.new(2, 0.5, 2)
+            part4.Position = Vector3.new(-i, 0, j)
+            table.insert(indicatorsArray, part4)
+        end
+    end
+end
+
+do
+    sidePicker()
+end
+
+
+
+-- Luka Doncic (Ball Handlers)
+local function onPartAdded(part)
+    -- Check if the added part matches the name we are looking for
+    if part.Name == partNameToCheck then
+        --currentBall = part
+        table.insert(balls, part)
+    end
+end
+
+local function onPartRemoved(part)
+    -- Check if the added part matches the name we are looking for
+    if part.Name == partNameToCheck then
+        --currentBall = part
+        local partToRemove = part
+        for i, v in ipairs(balls) do
+            if v == partToRemove then
+                table.remove(balls, i)
+                break
+            end
+        end
+    end
+end
+
+local function ballDistance(point1, point2)
+    local dx = point2.X - point1.X
+    local dz = point2.Z - point1.Z
+    return math.sqrt(dx * dx + dz * dz)
+end
+
+local function setCurrentBall()
+    local closestBallDistance
+    local closestBall
+    if #balls ~= 0 then 
+        for i, v in ipairs(balls) do
+            if #balls == 1 then
+                closestBall = v
+            elseif closestBall == nil then
+                closestBall = v
+                closestBallDistance = ballDistance(HRP.Position, closestBall.Position.Value)
+            elseif closestBall ~= nil and closestBallDistance > ballDistance(HRP.Position, v.Position.Value) then 
+                closestBall = v
+                closestBallDistance = ballDistance(HRP.Position, v.Position.Value) 
+            end
+        end
+    end
+    currentBall = closestBall
+end
+
+local function predictBallPosition()
+    local initialPosition = currentBall.Position.Value
+    local initialVelocity = currentBall.Velocity.Value
+    local velocityX = initialVelocity.X 
+    local velocityZ = initialVelocity.Z
+    local newPositionX = initialPosition.X + (velocityX * time)
+    local newPositionZ = initialPosition.Z + (velocityZ * time)
+    return Vector3.new(newPositionX, initialPosition.Y, newPositionz)
+end 
+
+game.Workspace.ChildAdded:Connect(onPartAdded)
+game.Workspace.ChildRemoved:Connect(onPartRemoved)
+
+
+
+-- Jump Direction for Glide Spike
+local function jumpTowardsTarget(player, targetPosition)
+    -- Calculate the direction from player's current position to the target position
+    local direction = (targetPosition - player.Character.HumanoidRootPart.Position).unit
+
+    -- Set the jump power (adjust this value as needed)
+    local jumpPower = 32
+
+    -- Calculate the jump velocity based on direction and jump power
+    local jumpVelocity = direction * jumpPower
+
+    -- Apply the jump velocity to the player's HumanoidRootPart
+    player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
+end
+
+
+
+
+-- Input Handler
+UIS.InputBegan:Connect(function(input) --Best way to do this
+    if input.KeyCode == Enum.KeyCode.V then
+        if teamSide == 1 then
+            ididathing(ovParams)
+        elseif teamSide == -1 then
+            ididathing(ovParams2)
+        end
+    elseif input.KeyCode == Enum.KeyCode.KeypadMultiply then
+        teamSide *= -1
+    elseif input.KeyCode == Enum.KeyCode.Two then
+        spikeMode *= -1
+    elseif input.KeyCode == Enum.KeyCode.R then
+        rebound()
+    elseif input.KeyCode == Enum.KeyCode.F4 then
+        if teamSide == 1 then 
+            glideSpike(ovParams)
+        elseif teamSide == -1 then
+            glideSpike(ovParams2)
+        end
+    elseif input.KeyCode == Enum.KeyCode.F3 then
+        if teamSide == -1 then
+            HRP.Tilt.D = 350
+            HRP.Tilt.P = 2700
+            player.Character.Humanoid.AutoRotate = false
+            HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
+            if HRP.Position.X > 0 then
+                HRP.CFrame *= CFrame.Angles(0, math.rad(70), 0)
+                keydown(0x63)
+                keydown(0x20)
+                wait(0.2)
+                keydown(0x77)
+                wait(0.4)
+                keyup(0x20)
+                keyup(0x77)
+                keyup(0x63)
+            else
+                HRP.CFrame *= CFrame.Angles(0, math.rad(-70), 0)
+                keydown(0x63)
+                keydown(0x20)
+                wait(0.2)
+                keydown(0x77)
+                wait(0.4)
+                keyup(0x20)
+                keyup(0x77)
+                keyup(0x63)
+            end
+        else
+            HRP.Tilt.D = 350
+            HRP.Tilt.P = 2700
+            player.Character.Humanoid.AutoRotate = false
+            HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
+            if HRP.Position.X < 0 then
+                HRP.CFrame *= CFrame.Angles(0, math.rad(70), 0)
+                keydown(0x63)
+                keydown(0x20)
+                wait(0.2)
+                keydown(0x77)
+                wait(0.4)
+                keyup(0x20)
+                keyup(0x77)
+                keyup(0x63)
+            else
+                HRP.CFrame *= CFrame.Angles(0, math.rad(-70), 0)
+                keydown(0x63)
+                keydown(0x20)
+                wait(0.2)
+                keydown(0x77)
+                wait(0.4)
+                keyup(0x20)
+                keyup(0x77)
+                keyup(0x63)
+            end
+        end
+        HRP.Tilt.D = 500
+        HRP.Tilt.P = 3000
+    end
+end)
+
+
+
+
+-- Auto Spike
+function ididathing(tempParams)
+    -- Spike Distance
+    local longin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 48 + tonumber(math.abs(HRP.Position.Z)), tempParams)
+    local longout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 45 + tonumber(math.abs(HRP.Position.Z)), tempParams)
+    local midlongin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 42, tempParams)
+    local midlongout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 39, tempParams)
+    local midin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 36, tempParams)
+    local midout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 33, tempParams)
+    local shortin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 24, tempParams)
+    local shortout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 19, tempParams)
+    local netout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, (2 * tonumber(math.abs(HRP.Position.Z))) - 2), tempParams)
+    for i, v in pairs(longin) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(longout) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    for i, v in pairs(midlongin) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(midlongout) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    for i, v in pairs(midin) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(midout) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    for i, v in pairs(shortin) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(shortout) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    for i, v in pairs(netout) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    for i, v in pairs(longin) do
+        if v.BrickColor == BrickColor.new(37) then
+            table.insert(possibleSpots, v)
+        end
+    end
+
+    local tempArray = {}
+    for i, v in ipairs(possibleSpots) do
+        table.insert(tempArray, v)
+    end
+    local finalArray = antiBlock(tempArray)
+    farthestFinder(finalArray, playersArray) -- Find Farthest Part
+    farthestPart.BrickColor = BrickColor.new(1)
+    
+    -- Tilt Handler
+    local tilt
+    if findDistance(farthestPart, player) < 26 then
+        tilt = true
+    elseif findDistance(farthestPart, player) < 38 then
+        tilt = true
+        HRP.Tilt.D = 300
+        HRP.Tilt.P = 800
+    elseif findDistance(farthestPart, player) < 44 then
+        tilt = true
+        HRP.Tilt.D = 300
+        HRP.Tilt.P = 300
+    end
+
+    -- Spike Inputs
+    keydown(0x77)
+    keydown(0x61)
+    keydown(0x73)
+    keydown(0x64)
+    keydown(0x63)
+    wait(0.01)
+    HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(farthestPart.Position.X, HRP.Position.Y, farthestPart.Position.Z)) -- AIM
+    keydown(0x20)  -- JUMP
+    wait(0.01)
+    keyup(0x77)
+    keyup(0x61)
+    keyup(0x73)
+    keyup(0x64)
+    keyup(0x63)
+    player.Character.Humanoid.AutoRotate = false
+    if tilt then  -- FORWARD TILT
+        keydown(0x77)
+        wait(0.05)
+        keyup(0x77)
+    end
+
+    -- Cleanup
+    table.clear(possibleSpots)
+    keyup(0x20)
+    player.Character.Humanoid.AutoRotate = true
+    for i, v in pairs(longin) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    local farthestPart = nil
+    local farthestDistance = nil
+    longin = {}
+    longout = {}
+    shortin = {}
+    shortout = {}
+    task.wait(1)
+    HRP.Tilt.D = 500
+    HRP.Tilt.P = 3000
+end
+
+
+-- Glide AutoSpike
+function glideSpike(tempParams)
+    local ballPrediction
+    setCurrentBall()
+    ballPrediction = predictBallPosition()
+    local longin = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 48 + tonumber(math.abs(ballPrediction.Z)), tempParams)
+    local longout = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 45 + tonumber(math.abs(ballPrediction.Z)), tempParams)
+    local midlongin = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 42, tempParams)
+    local midlongout = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 39, tempParams)
+    local midin = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 36, tempParams)
+    local midout = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 33, tempParams)
+    --local shortin = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 24, tempParams)
+    --local shortout = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 19, tempParams)
+    local netout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, (2 * tonumber(math.abs(ballPrediction.Z))) - 1), tempParams)
+    for i, v in pairs(longin) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(longout) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    for i, v in pairs(midlongin) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(midlongout) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    for i, v in pairs(midin) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(midout) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    --[[for i, v in pairs(shortin) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(shortout) do
+        v.BrickColor = BrickColor.new(21)
+    end]]--
+    for i, v in pairs(netout) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    for i, v in pairs(longin) do
+        if v.BrickColor == BrickColor.new(37) then
+            table.insert(possibleSpots, v)
+        end
+    end
+
+    local tempArray = {}
+    for i, v in ipairs(possibleSpots) do
+        table.insert(tempArray, v)
+    end
+    local finalArray = antiBlock2(tempArray, ballPrediction)
+    farthestFinder(finalArray, playersArray) -- Find Farthest Part
+    farthestPart.BrickColor = BrickColor.new(1)
+    
+    -- Tilt Handler
+    local tilt
+    if findDistance(farthestPart, player) < 26 then
+        tilt = true
+    elseif findDistance(farthestPart, player) < 38 then
+        tilt = true
+        HRP.Tilt.D = 300
+        HRP.Tilt.P = 800
+    elseif findDistance(farthestPart, player) < 44 then
+        tilt = true
+        HRP.Tilt.D = 300
+        HRP.Tilt.P = 300
+    end
+
+    -- Spike Inputs
+    keydown(0x63)
+    wait(0.01)
+    --HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(farthestPart.Position.X, HRP.Position.Y, farthestPart.Position.Z)) -- AIM
+    local direction = (Vector3.new(farthestPart.Position.X, 0, farthestPart.Position.Z) - (Vector3.new(ballPrediction.X, 0, ballPrediction.Z))).unit
+    local targPosition = Vector3.new(ballPrediction.X, HRP.Position.Y, ballPrediction.Z)
+    HRP.CFrame = CFrame.lookAlong(HRP.Position, direction)
+    jumpTowardsTarget(player, targPosition)
+    keydown(0x20)  -- JUMP
+    wait(0.01)
+    keyup(0x63)
+    player.Character.Humanoid.AutoRotate = false
+    if tilt then  -- FORWARD TILT
+        keydown(0x77)
+        wait(0.05)
+        keyup(0x77)
+    end
+
+    -- Cleanup
+    table.clear(possibleSpots)
+    keyup(0x20)
+    player.Character.Humanoid.AutoRotate = true
+    for i, v in pairs(longin) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    local farthestPart = nil
+    local farthestDistance = nil
+    longin = {}
+    longout = {}
+    shortin = {}
+    shortout = {}
+    task.wait(1)
+    HRP.Tilt.D = 500
+    HRP.Tilt.P = 3000
+end
+
+
+
+
+-- Array Handling
+do
+    playersArray = Players:GetChildren()
+end
+
+Players.ChildAdded:Connect(function(v)
+    table.insert(playersArray, v)
+end)
+
+Players.PlayerRemoving:Connect(function(v)
+    local found = table.find(playersArray, v)
+    if found then
+        table.remove(playersArray, found)
+    end
+end)
+
+
+
+
+
+-- Find Distance Between Spot and Player
+function findDistance(spot, plr)
+    --print(math.sqrt(((plr.Character.HumanoidRootPart.Position.X - spot.Position.X)^2) + ((plr.Character.HumanoidRootPart.Position.Z - spot.Position.Z)^2)))
+    return math.sqrt(((plr.Character.HumanoidRootPart.Position.X - spot.Position.X)^2) + ((plr.Character.HumanoidRootPart.Position.Z - spot.Position.Z)^2))
+end
+
+
+
+-- Find Furthest Spot From Player
+function farthestFinder(spods, playas)
+    farthestDistance = nil
+    for i, v in pairs(spods) do
+        local closestDistance = nil
+        for j, u in pairs(playas) do
+            if u.TeamColor ~= player.TeamColor and u.TeamColor ~= BrickColor.new("White")then
+                local currentDistance = findDistance(v, u)
+                if farthestPart ~= nil and closestDistance ~=nil then
+                    if currentDistance < closestDistance then
+                        closestDistance = currentDistance
+                    end
+                elseif farthestPart ~= nil and closestDistance == nil then
+                    closestDistance = currentDistance
+                elseif farthestPart == nil then
+                    closestDistance = currentDistance
+                end
+            end
+        end
+        if farthestDistance == nil then
+            farthestDistance = closestDistance
+            farthestPart = v
+        elseif farthestDistance ~= nil and closestDistance > farthestDistance then
+            farthestPart = v
+        end
+    end
+end
+
+
+
+
+-- Rebound Script
+function rebound()
+    local rcParams = RaycastParams.new()
+    rcParams.FilterDescendantsInstances = {filterTable}
+    rcParams.FilterType = Enum.RaycastFilterType.Whitelist
+    local origin = Vector3.new(HRP.Position.X, HRP.Position.Y, HRP.Position.Z)
+    local direction = HRP.CFrame.LookVector * 15
+    local rcResult = workspace:Raycast(origin, direction, rcParams)
+    if rcResult then
+        keydown(0x78)
+        wait(0.001)
+        keyup(0x78)
+    end
+end
+
+
+-- Anti Block 
+function isJumping(v)
+    -- Get the player's character
+    local character = v.Character
+    if character then
+        -- Get the Humanoid
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            -- Check if the Humanoid is currently jumping
+            return humanoid:GetState() == Enum.HumanoidStateType.Freefall
+        end
+    end
+    return false
+end
+
+
+function findJumpingPlayers()
+    local jumpingPlayers = {}
+    for _, v in ipairs(Players:GetPlayers()) do
+        if v.TeamColor ~= player.TeamColor then
+            if isJumping(v) then
+                table.insert(jumpingPlayers, v)
+            end
+        end
+    end
+    return jumpingPlayers
+end
+
+--[[function findJumpers()
+    local jumpingPlayers = findJumpingPlayers()
+    for _, v in ipairs(jumpingPlayers) do
+        print(player.Name .. " is jumping.")
+    end
+end]]--
+
+function calculateArea(x1, z1, x2, z2, x3, z3)
+	return math.abs((x1*(z2-z3) + x2*(z3-z1) + x3*(z1-z2)) / 2.0)
+end
+
+function isInsideTriangle(x1, z1, x2, z2, x3, z3, x, z)
+	-- Calculate the total area of the triangle
+	local totalArea = calculateArea(x1, z1, x2, z2, x3, z3)
+
+	-- Calculate the area of three sub-triangles formed by the point and the triangle vertices
+	local area1 = calculateArea(x, z, x2, z2, x3, z3)
+	local area2 = calculateArea(x1, z1, x, z, x3, z3)
+	local area3 = calculateArea(x1, z1, x2, z2, x, z)
+
+	-- If the sum of the areas of the sub-triangles equals the total area, the point is inside the triangle
+	return (totalArea == area1 + area2 + area3)
+end
+
+function castray(origin, direction)
+    print(walls)
+	local rayDirection = CFrame.lookAt(HRP.Position, Vector3.new(direction.Position.X, origin.Y, direction.Position.Z))
+    print(origin, "OG")
+    print(direction.Position, "DP")
+	local raycastParams = RaycastParams.new()
+	raycastParams.FilterDescendantsInstances = {walls}
+	raycastParams.FilterType = Enum.RaycastFilterType.Include
+	raycastParams.IgnoreWater = true
+
+	local raycastResult = workspace:Raycast(HRP.Position, rayDirection.LookVector * 500, raycastParams)
+    if raycastResult == nil then
+        print("ITS NIL FOR SOME REASON")
+    else 
+        print(raycastResult.Position, "RP")
+    end
+    return raycastResult.Position
+end
+
+function antiBlock(tempArray) -- tempArray = position of possible spots
+    local finalArray = {}
+    local jumpingPlayers = findJumpingPlayers()
+    if #jumpingPlayers ~= 0 then 
+        for _, v in ipairs(jumpingPlayers) do
+            local blockHitboxCF = v.Character.BlockHitbox.CFrame
+            local size = v.Character.BlockHitbox.Size
+            local directLeft = (blockHitboxCF - blockHitboxCF.RightVector * size.X/2)
+            local directRight = (blockHitboxCF + blockHitboxCF.RightVector * size.X/2)
+            print("Directs")
+            local t1 = HRP.Position
+            print(t1, "t1")
+            print(HRP.Position)
+            local t2 = castray(HRP.Position, directLeft)
+            print(t2, "t2")
+            local t3 = castray(HRP.Position, directRight)
+            print(t3, "t3")
+            local t4
+            for _, u in ipairs(tempArray) do
+                t4 = u.Position
+                --print(t4.. "t4")
+                if not isInsideTriangle(t1.X, t1.Z, t2.X, t2.Z, t3.X, t3.Z, t4.X, t4.Z) then
+                    table.insert(finalArray, u)
+                end
+            end
+        end
+        return finalArray
+    else
+        return tempArray
+    end
+end
+
+function castray2(origin, direction)
+    print(walls)
+	local rayDirection = CFrame.lookAt(origin, Vector3.new(direction.Position.X, origin.Y, direction.Position.Z))
+    print(origin, "OG")
+    print(direction.Position, "DP")
+	local raycastParams = RaycastParams.new()
+	raycastParams.FilterDescendantsInstances = {walls}
+	raycastParams.FilterType = Enum.RaycastFilterType.Include
+	raycastParams.IgnoreWater = true
+
+	local raycastResult = workspace:Raycast(origin, rayDirection.LookVector * 500, raycastParams)
+    if raycastResult == nil then
+        print("ITS NIL FOR SOME REASON")
+    else 
+        print(raycastResult.Position, "RP")
+    end
+    return raycastResult.Position
+end
+
+function antiBlock2(tempArray, origin) -- tempArray = position of possible spots
+    local finalArray = {}
+    local jumpingPlayers = findJumpingPlayers()
+    if #jumpingPlayers ~= 0 then 
+        for _, v in ipairs(jumpingPlayers) do
+            local blockHitboxCF = v.Character.BlockHitbox.CFrame
+            local size = v.Character.BlockHitbox.Size
+            local directLeft = (blockHitboxCF - blockHitboxCF.RightVector * size.X/2)
+            local directRight = (blockHitboxCF + blockHitboxCF.RightVector * size.X/2)
+            local t1 = origin
+            local t2 = castray2(origin, directLeft)
+            print(t2, "t2")
+            local t3 = castray2(origin, directRight)
+            print(t3, "t3")
+            local t4
+            for _, u in ipairs(tempArray) do
+                t4 = u.Position
+                --print(t4.. "t4")
+                if not isInsideTriangle(t1.X, t1.Z, t2.X, t2.Z, t3.X, t3.Z, t4.X, t4.Z) then
+                    table.insert(finalArray, u)
+                end
+            end
+        end
+        return finalArray
+    else
+        return tempArray
+    end
+end
