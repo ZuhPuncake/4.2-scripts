@@ -218,7 +218,7 @@ local function predictBallLandingX()
     local direction = (Vector3.new(horizontalDisplacement.X, HRP.Position.Y, horizontalDisplacement.Z) - HRP.Position).unit
     if (HRP.Position - horizontalDisplacement).magnitude > 17 then
         diveVelocity = direction * 190
-    elseif (HRP.Position - horizontalDisplacement).magnitude > 9 then
+    elseif (HRP.Position - horizontalDisplacement).magnitude > 5 then
         diveVelocity = direction * 175
     else 
         diveVelocity = direction * 140
