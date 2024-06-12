@@ -10,7 +10,7 @@ local UIS = game:GetService("UserInputService")
 local partNameToCheck = "Ball"
 local currentBall
 local balls = {}
-local time = 0.5
+local time = 0.3
 
 local indicatorFolder = Instance.new("Folder", game:GetService("Workspace"))
 indicatorFolder.Name = "indic"
