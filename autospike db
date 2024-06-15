@@ -20,7 +20,7 @@ local indicatorFolder2 = Instance.new("Folder", game:GetService("Workspace"))
 indicatorFolder2.Name = "indic2"
 local indicators2 = game.Workspace.indic2
 
-local transparency = 0.5
+local transparency = 0.8
 local ysize = 2
 
 local filterTable = {}
@@ -629,7 +629,7 @@ function isJumping(v)
         local humanoid = character:FindFirstChildOfClass("Humanoid")
         if humanoid then
             -- Check if the Humanoid is currently jumping
-            return humanoid:GetState() == Enum.HumanoidStateType.Freefall
+            return humanoid.FloorMaterial == Enum.Material.Air
         end
     end
     return false
