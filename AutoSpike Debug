@@ -21,6 +21,7 @@ indicatorFolder2.Name = "indic2"
 local indicators2 = game.Workspace.indic2
 
 local transparency = 0.5
+local ysize = 2
 
 local filterTable = {}
 local indicatorsArray = {}
@@ -113,7 +114,7 @@ function sidePicker()
             part1.BrickColor = BrickColor.new(21)
             part1.Material = Enum.Material.Neon
             part1.Transparency = transparency
-            part1.Size = Vector3.new(2, 0.5, 2)
+            part1.Size = Vector3.new(2, ysize, 2)
             part1.Position = Vector3.new(i, 0, j)
             table.insert(indicatorsArray, part1)
 
@@ -125,7 +126,7 @@ function sidePicker()
             part2.BrickColor = BrickColor.new(21)
             part2.Material = Enum.Material.Neon
             part2.Transparency = transparency
-            part2.Size = Vector3.new(2, 0.5, 2)
+            part2.Size = Vector3.new(2, ysize, 2)
             part2.Position = Vector3.new(-i, 0, j)
             table.insert(indicatorsArray, part2)
         end
@@ -140,7 +141,7 @@ function sidePicker()
             part3.BrickColor = BrickColor.new(21)
             part3.Material = Enum.Material.Neon
             part3.Transparency = transparency
-            part3.Size = Vector3.new(2, 0.5, 2)
+            part3.Size = Vector3.new(2, ysize, 2)
             part3.Position = Vector3.new(i, 0, j)
             table.insert(indicatorsArray, part3)
 
@@ -152,7 +153,7 @@ function sidePicker()
             part4.BrickColor = BrickColor.new(21)
             part4.Material = Enum.Material.Neon
             part4.Transparency = transparency
-            part4.Size = Vector3.new(2, 0.5, 2)
+            part4.Size = Vector3.new(2, ysize, 2)
             part4.Position = Vector3.new(-i, 0, j)
             table.insert(indicatorsArray, part4)
         end
