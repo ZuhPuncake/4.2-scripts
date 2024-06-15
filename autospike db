@@ -10,7 +10,7 @@ local UIS = game:GetService("UserInputService")
 local partNameToCheck = "Ball"
 local currentBall
 local balls = {}
-local time = 0.5
+local time = 0.3
 
 local indicatorFolder = Instance.new("Folder", game:GetService("Workspace"))
 indicatorFolder.Name = "indic"
@@ -20,8 +20,8 @@ local indicatorFolder2 = Instance.new("Folder", game:GetService("Workspace"))
 indicatorFolder2.Name = "indic2"
 local indicators2 = game.Workspace.indic2
 
-local transparency = 0.8
-local ysize = 2
+local transparency = 1
+local ysize = 0.5
 
 local filterTable = {}
 local indicatorsArray = {}
@@ -375,11 +375,15 @@ function ididathing(tempParams)
     end
 
     local tempArray = {}
+    local tempPlayerArray = {}
     for i, v in ipairs(possibleSpots) do
         table.insert(tempArray, v)
     end
-    local finalArray = antiBlock(tempArray)
-    farthestFinder(finalArray, playersArray) -- Find Farthest Part
+    for i, v in ipairs(playersArray) do
+        table.insert(tempPlayerArray, v)
+    end
+    local finalArray, finalplayerArray = antiBlock(tempArray, tempPlayerArray)
+    farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
     farthestPart.BrickColor = BrickColor.new(1)
     
     -- Tilt Handler
@@ -485,11 +489,15 @@ function glideSpike(tempParams)
     end
 
     local tempArray = {}
+    local tempPlayerArray = {}
     for i, v in ipairs(possibleSpots) do
         table.insert(tempArray, v)
     end
-    local finalArray = antiBlock2(tempArray, ballPrediction)
-    farthestFinder(finalArray, playersArray) -- Find Farthest Part
+    for i, v in ipairs(playersArray) do
+        table.insert(tempPlayerArray, v)
+    end
+    local finalArray, finalplayerArray = antiBlock2(tempArray, ballPrediction, tempPlayerArray)
+    farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
     farthestPart.BrickColor = BrickColor.new(1)
     
     -- Tilt Handler
@@ -691,8 +699,9 @@ function castray(origin, direction)
     return raycastResult.Position
 end
 
-function antiBlock(tempArray) -- tempArray = position of possible spots
+function antiBlock(tempArray, tempPlayerArray) -- tempArray = position of possible spots
     local finalArray = {}
+    local finalplayerArray = {}
     local jumpingPlayers = findJumpingPlayers()
     if #jumpingPlayers ~= 0 then 
         for _, v in ipairs(jumpingPlayers) do
@@ -718,10 +727,15 @@ function antiBlock(tempArray) -- tempArray = position of possible spots
                     u.BrickColor = BrickColor.new(21)
                 end
             end
+            for i, u in ipairs(tempPlayerArray) do
+                if u ~= v then
+                    table.insert(finalplayerArray, u)
+                end
+            end
         end
-        return finalArray
+        return finalArray, finalplayerArray
     else
-        return tempArray
+        return tempArray, tempPlayerArray
     end
 end
 
@@ -744,8 +758,9 @@ function castray2(origin, direction)
     return raycastResult.Position
 end
 
-function antiBlock2(tempArray, origin) -- tempArray = position of possible spots
+function antiBlock2(tempArray, origin, tempPlayerArray) -- tempArray = position of possible spots
     local finalArray = {}
+    local finalplayerArray = {}
     local jumpingPlayers = findJumpingPlayers()
     if #jumpingPlayers ~= 0 then 
         for _, v in ipairs(jumpingPlayers) do
@@ -768,9 +783,14 @@ function antiBlock2(tempArray, origin) -- tempArray = position of possible spots
                     u.BrickColor = BrickColor.new(21)
                 end
             end
+            for i, u in ipairs(tempPlayerArray) do
+                if u ~= v then
+                    table.insert(finalplayerArray, u)
+                end
+            end
         end
-        return finalArray
+        return finalArray, finalplayerArray
     else
-        return tempArray
+        return tempArray, tempPlayerArray
     end
 end
