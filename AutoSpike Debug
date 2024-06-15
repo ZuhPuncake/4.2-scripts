@@ -112,7 +112,7 @@ function sidePicker()
             part1.Shape = Enum.PartType.Ball
             part1.BrickColor = BrickColor.new(21)
             part1.Material = Enum.Material.Neon
-            part1.Transparency = 1
+            part1.Transparency = transparency
             part1.Size = Vector3.new(2, 0.5, 2)
             part1.Position = Vector3.new(i, 0, j)
             table.insert(indicatorsArray, part1)
@@ -124,7 +124,7 @@ function sidePicker()
             part2.Shape = Enum.PartType.Ball
             part2.BrickColor = BrickColor.new(21)
             part2.Material = Enum.Material.Neon
-            part2.Transparency = 1
+            part2.Transparency = transparency
             part2.Size = Vector3.new(2, 0.5, 2)
             part2.Position = Vector3.new(-i, 0, j)
             table.insert(indicatorsArray, part2)
@@ -139,7 +139,7 @@ function sidePicker()
             part3.Shape = Enum.PartType.Ball
             part3.BrickColor = BrickColor.new(21)
             part3.Material = Enum.Material.Neon
-            part3.Transparency = 1
+            part3.Transparency = transparency
             part3.Size = Vector3.new(2, 0.5, 2)
             part3.Position = Vector3.new(i, 0, j)
             table.insert(indicatorsArray, part3)
@@ -151,7 +151,7 @@ function sidePicker()
             part4.Shape = Enum.PartType.Ball
             part4.BrickColor = BrickColor.new(21)
             part4.Material = Enum.Material.Neon
-            part4.Transparency = 1
+            part4.Transparency = transparency
             part4.Size = Vector3.new(2, 0.5, 2)
             part4.Position = Vector3.new(-i, 0, j)
             table.insert(indicatorsArray, part4)
