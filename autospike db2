@@ -20,7 +20,7 @@ local indicatorFolder2 = Instance.new("Folder", game:GetService("Workspace"))
 indicatorFolder2.Name = "indic2"
 local indicators2 = game.Workspace.indic2
 
-local transparency = 1
+local transparency = 0.95
 local ysize = 2
 
 local filterTable = {}
