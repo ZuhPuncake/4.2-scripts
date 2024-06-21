@@ -394,6 +394,7 @@ function ididathing(tempParams)
     local finalArray, finalplayerArray = antiBlock(tempArray, tempPlayerArray)
     farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
     farthestPart.BrickColor = BrickColor.new(1)
+    farthestPart.Transparency = 0
     
     -- Tilt Handler
     local tilt
@@ -438,6 +439,7 @@ function ididathing(tempParams)
     for i, v in pairs(longin) do
         v.BrickColor = BrickColor.new(21)
     end
+    farthestPart.Transparency = 1
     local farthestPart = nil
     local farthestDistance = nil
     longin = {}
@@ -514,6 +516,7 @@ function glideSpike(tempParams)
     local finalArray, finalplayerArray = antiBlock2(tempArray, ballPrediction, tempPlayerArray)
     farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
     farthestPart.BrickColor = BrickColor.new(1)
+    farthestPart.Transparency = 0
     
     -- Tilt Handler
     local tilt
@@ -554,6 +557,7 @@ function glideSpike(tempParams)
     for i, v in pairs(longin) do
         v.BrickColor = BrickColor.new(21)
     end
+    farthestPart.Transparency = 1
     local farthestPart = nil
     local farthestDistance = nil
     longin = {}
