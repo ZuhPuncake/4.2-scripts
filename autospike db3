@@ -263,7 +263,7 @@ UIS.InputBegan:Connect(function(input) --Best way to do this
     elseif input.KeyCode == Enum.KeyCode.KeypadDivide then
         deepCut *= -1
     elseif input.KeyCode == Enum.KeyCode.Two then
-        spikeMode *= -1
+        deepCut *= -1
     elseif input.KeyCode == Enum.KeyCode.R then
         rebound()
     elseif input.KeyCode == Enum.KeyCode.F4 then
