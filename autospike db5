@@ -443,7 +443,7 @@ function ididathing(tempParams)
     for i, v in pairs(longin) do
         if v.BrickColor == BrickColor.new(37) then
             table.insert(possibleSpots, v)
-            v.Transparency = 0.5
+            v.Transparency = 0.8
         end
     end
 
