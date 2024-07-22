@@ -11,7 +11,7 @@ local partNameToCheck = "Ball"
 local currentBall
 local balls = {}
 local time = 0.3
-local deepCut = math.rad(70)
+local deepCut = math.rad(74)
 
 local indicatorFolder = Instance.new("Folder", game:GetService("Workspace"))
 indicatorFolder.Name = "indic"
