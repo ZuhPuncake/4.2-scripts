@@ -270,7 +270,7 @@ local function predictBallLanding(currentBall)
 end
 
 
-local function jumpTowardsTarget(player, targetPosition)
+function jumpTowardsTarget(player, targetPosition)
     -- Calculate the direction from player's current position to the target position
     local direction = (targetPosition - player.Character.HumanoidRootPart.Position).unit
 
@@ -423,7 +423,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                 player.Character.Humanoid.AutoRotate = false
                 HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
                 if HRP.Position.X > 0 then
-                    player.Character.Humanoid.HipHeight = 3
                     HRP.CFrame *= CFrame.Angles(0, deepCut, 0)
                     keypress(0x43)
                     setCurrentBall()
@@ -436,9 +435,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     keyrelease(0x20)
                     keyrelease(0x57)
                     keyrelease(0x43)
-                    player.Character.Humanoid.HipHeight = 2
                 else
-                    player.Character.Humanoid.HipHeight = 3
                     HRP.CFrame *= CFrame.Angles(0, deepCut * -1, 0)
                     keypress(0x43)
                     setCurrentBall()
@@ -451,7 +448,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     keyrelease(0x20)
                     keyrelease(0x57)
                     keyrelease(0x43)
-                    player.Character.Humanoid.HipHeight = 2
                 end
             else
                 HRP.Tilt.D = 350
@@ -459,7 +455,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                 player.Character.Humanoid.AutoRotate = false
                 HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
                 if HRP.Position.X < 0 then
-                    player.Character.Humanoid.HipHeight = 3
                     HRP.CFrame *= CFrame.Angles(0, deepCut, 0)
                     keypress(0x43)
                     setCurrentBall()
@@ -472,9 +467,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     keyrelease(0x20)
                     keyrelease(0x57)
                     keyrelease(0x43)
-                    player.Character.Humanoid.HipHeight = 2
                 else
-                    player.Character.Humanoid.HipHeight = 3
                     HRP.CFrame *= CFrame.Angles(0, deepCut * -1, 0)
                     keypress(0x43)
                     setCurrentBall()
@@ -487,7 +480,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     keyrelease(0x20)
                     keyrelease(0x57)
                     keyrelease(0x43)
-                    player.Character.Humanoid.HipHeight = 2
                 end
             end
             HRP.Tilt.D = 500
