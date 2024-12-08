@@ -235,13 +235,13 @@ local function predictBallLandingX()
     local horizontalDisplacement = currentBall.Position.Value + displacementOriginal
 
     local direction = (Vector3.new(horizontalDisplacement.X, HRP.Position.Y, horizontalDisplacement.Z) - HRP.Position).unit
-    --if (HRP.Position - horizontalDisplacement).magnitude > 17 then
-    --    diveVelocity = direction * 190
-    --elseif (HRP.Position - horizontalDisplacement).magnitude > 5 then
-    --    diveVelocity = direction * 175
-    --else 
-    --    diveVelocity = direction * 140
-    --end
+    if (HRP.Position - horizontalDisplacement).magnitude > 17 then
+        diveVelocity = direction * 190
+    elseif (HRP.Position - horizontalDisplacement).magnitude > 5 then
+        diveVelocity = direction * 175
+    else 
+        diveVelocity = direction * 140
+    end
     player.Character.Humanoid.AutoRotate = false
     player.Character.Humanoid.WalkSpeed = 0
     HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(horizontalDisplacement.X, HRP.Position.Y, horizontalDisplacement.Z))
@@ -249,9 +249,6 @@ local function predictBallLandingX()
     --keypress(0x4D)
     --virtualUser:TypeKey("0x6D")
     HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(horizontalDisplacement.X, HRP.Position.Y, horizontalDisplacement.Z))
-    keypress(0x4B)
-    wait(0.01)
-    keyrelease(0x4B)
     --wait(0.03)  
     --keyrelease(0x4D)
 end
@@ -309,6 +306,9 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         elseif input.KeyCode == Enum.KeyCode.Three then
             setCurrentBall()
             predictBallLandingX()
+            keypress(0x4B)
+            wait(0.01)
+            keyrelease(0x4B)
         elseif input.KeyCode == Enum.KeyCode.F6 then
             playAnimation(player.Character, readyId)
         elseif input.KeyCode == Enum.KeyCode.F8 then
@@ -429,7 +429,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
                     jumpTowardsTarget(player, targPosition)
                     keypress(0x20)
-                    wait(0.2)
+                    wait(0.03)
                     keypress(0x57)
                     wait(0.4)
                     keyrelease(0x20)
@@ -442,7 +442,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
                     jumpTowardsTarget(player, targPosition)
                     keypress(0x20)
-                    wait(0.2)
+                    wait(0.03)
                     keypress(0x57)
                     wait(0.4)
                     keyrelease(0x20)
@@ -461,7 +461,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
                     jumpTowardsTarget(player, targPosition)
                     keypress(0x20)
-                    wait(0.2)
+                    wait(0.03)
                     keypress(0x57)
                     wait(0.4)
                     keyrelease(0x20)
@@ -474,7 +474,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
                     jumpTowardsTarget(player, targPosition)
                     keypress(0x20)
-                    wait(0.2)
+                    wait(0.03)
                     keypress(0x57)
                     wait(0.4)
                     keyrelease(0x20)
