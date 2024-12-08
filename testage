@@ -133,7 +133,7 @@ local function ballDistance(point1, point2)
     return math.sqrt(dx * dx + dz * dz)
 end
 
-local function setCurrentBall()
+function setCurrentBall()
     local closestBallDistance
     local closestBall
     if #balls ~= 0 then 
