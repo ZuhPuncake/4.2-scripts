@@ -105,7 +105,7 @@ local balls = {}
 
 -- Ball Added
 
-local function onPartAdded(part)
+function onPartAdded(part)
     -- Check if the added part matches the name we are looking for
     if part.Name == partNameToCheck then
         --currentBall = part
@@ -113,7 +113,7 @@ local function onPartAdded(part)
     end
 end
 
-local function onPartRemoved(part)
+function onPartRemoved(part)
     -- Check if the added part matches the name we are looking for
     if part.Name == partNameToCheck then
         --currentBall = part
@@ -127,13 +127,13 @@ local function onPartRemoved(part)
     end
 end
 
-local function ballDistance(point1, point2)
+function ballDistance(point1, point2)
     local dx = point2.X - point1.X
     local dz = point2.Z - point1.Z
     return math.sqrt(dx * dx + dz * dz)
 end
 
-local function setCurrentBall()
+function setCurrentBall()
     local closestBallDistance
     local closestBall
     if #balls ~= 0 then 
@@ -220,7 +220,7 @@ end)
 
 
 -- Dive Script
-local function predictBallLandingX()
+function predictBallLandingX()
     -- Calculate time to reach Y=0
     local currentYVelocity = currentBall.Velocity.Value.Y
     if currentYVelocity < 0 then
@@ -324,7 +324,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             end
         elseif input.KeyCode == Enum.KeyCode.Six then
             direction = 15
-        elseif input.KeyCode == Enum.KeyCode.L then
+        elseif input.KeyCode == Enum.KeyCode.T then
             setCurrentBall()
         elseif input.KeyCode == Enum.KeyCode.Seven then
             direction = 7
@@ -424,7 +424,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                 player.Character.Humanoid.AutoRotate = false
                 HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
                 if HRP.Position.X > 0 then
-                    player.Character.Humanoid.HipHeight = 3
                     HRP.CFrame *= CFrame.Angles(0, deepCut, 0)
                     keypress(0x43)
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
@@ -436,9 +435,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     keyrelease(0x20)
                     keyrelease(0x57)
                     keyrelease(0x43)
-                    player.Character.Humanoid.HipHeight = 2
                 else
-                    player.Character.Humanoid.HipHeight = 3
                     HRP.CFrame *= CFrame.Angles(0, deepCut * -1, 0)
                     keypress(0x43)
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
@@ -450,7 +447,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     keyrelease(0x20)
                     keyrelease(0x57)
                     keyrelease(0x43)
-                    player.Character.Humanoid.HipHeight = 2
                 end
             else
                 HRP.Tilt.D = 350
@@ -458,7 +454,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                 player.Character.Humanoid.AutoRotate = false
                 HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
                 if HRP.Position.X < 0 then
-                    player.Character.Humanoid.HipHeight = 3
                     HRP.CFrame *= CFrame.Angles(0, deepCut, 0)
                     keypress(0x43)
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
@@ -470,9 +465,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     keyrelease(0x20)
                     keyrelease(0x57)
                     keyrelease(0x43)
-                    player.Character.Humanoid.HipHeight = 2
                 else
-                    player.Character.Humanoid.HipHeight = 3
                     HRP.CFrame *= CFrame.Angles(0, deepCut * -1, 0)
                     keypress(0x43)
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
@@ -484,7 +477,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     keyrelease(0x20)
                     keyrelease(0x57)
                     keyrelease(0x43)
-                    player.Character.Humanoid.HipHeight = 2
                 end
             end
             HRP.Tilt.D = 500
