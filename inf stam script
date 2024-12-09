@@ -1,4 +1,4 @@
-local aux = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/Upbolt/Hydroxide/revision/ohaux.lua"))()
+local aux = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ZuhPuncake/4.2-scripts/refs/heads/main/inf%20stam%20gc"))()
 local player = game.Players.LocalPlayer.Name
 local scriptPath = workspace[player].CharacterScript
 local closureName = "handleStaminaRegen"
