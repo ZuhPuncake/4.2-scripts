@@ -304,6 +304,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         if input.KeyCode == Enum.KeyCode.Semicolon then
             flick()
         elseif input.KeyCode == Enum.KeyCode.Three then
+            setCurrentBall()
             predictBallLandingX()
             keypress(0x4B)
             wait(0.01)
@@ -327,7 +328,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         elseif input.KeyCode == Enum.KeyCode.L then
             HRP.Anchored = true
             keypress(0x4E)
-            wait(0.9)
+            wait(0.2)
             keyrelease(0x4E)
             HRP.Anchored = false
         elseif input.KeyCode == Enum.KeyCode.Seven then
