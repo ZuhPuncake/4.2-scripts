@@ -270,7 +270,7 @@ local function predictBallLanding(currentBall)
 end
 
 
-local function jumpTowardsTarget(player, targetPosition)
+function jumpTowardsTarget(player, targetPosition)
     -- Calculate the direction from player's current position to the target position
     local direction = (targetPosition - player.Character.HumanoidRootPart.Position).unit
 
