@@ -324,8 +324,12 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             end
         elseif input.KeyCode == Enum.KeyCode.Six then
             direction = 15
-        elseif input.KeyCode == Enum.KeyCode.T then
-            setCurrentBall()
+        elseif input.KeyCode == Enum.KeyCode.L then
+            HRP.Anchored = true
+            keypress(0x4C)
+            wait(0.2)
+            keyrelease(0x4C)
+            HRP.Anchored = false
         elseif input.KeyCode == Enum.KeyCode.Seven then
             direction = 7
         elseif input.KeyCode == Enum.KeyCode.Eight then
@@ -417,7 +421,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         elseif input.KeyCode == Enum.KeyCode.Two then
             deepCut *= -1
         elseif input.KeyCode == Enum.KeyCode.N then
-            setCurrentBall()
             local targPosition
             if teamSide == -1 then
                 HRP.Tilt.D = 350
@@ -427,8 +430,11 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                 if HRP.Position.X > 0 then
                     HRP.CFrame *= CFrame.Angles(0, deepCut, 0)
                     keypress(0x43)
+                    setCurrentBall()
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
-                    jumpTowardsTarget(player, targPosition)
+                    local direction = (targPosition - player.Character.HumanoidRootPart.Position).unit
+                    local jumpVelocity = direction * 38
+                    player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
                     keypress(0x20)
                     wait(0.03)
                     keypress(0x57)
@@ -439,8 +445,11 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                 else
                     HRP.CFrame *= CFrame.Angles(0, deepCut * -1, 0)
                     keypress(0x43)
+                    setCurrentBall()
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
-                    jumpTowardsTarget(player, targPosition)
+                    local direction = (targPosition - player.Character.HumanoidRootPart.Position).unit
+                    local jumpVelocity = direction * 38
+                    player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
                     keypress(0x20)
                     wait(0.03)
                     keypress(0x57)
@@ -457,8 +466,11 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                 if HRP.Position.X < 0 then
                     HRP.CFrame *= CFrame.Angles(0, deepCut, 0)
                     keypress(0x43)
+                    setCurrentBall()
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
-                    jumpTowardsTarget(player, targPosition)
+                    local direction = (targPosition - player.Character.HumanoidRootPart.Position).unit
+                    local jumpVelocity = direction * 38
+                    player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
                     keypress(0x20)
                     wait(0.03)
                     keypress(0x57)
@@ -469,8 +481,11 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                 else
                     HRP.CFrame *= CFrame.Angles(0, deepCut * -1, 0)
                     keypress(0x43)
+                    setCurrentBall()
                     targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
-                    jumpTowardsTarget(player, targPosition)
+                    local direction = (targPosition - player.Character.HumanoidRootPart.Position).unit
+                    local jumpVelocity = direction * 38
+                    player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
                     keypress(0x20)
                     wait(0.03)
                     keypress(0x57)
