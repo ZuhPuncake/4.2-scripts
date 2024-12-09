@@ -326,9 +326,9 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             direction = 15
         elseif input.KeyCode == Enum.KeyCode.L then
             HRP.Anchored = true
-            keypress(0x4C)
+            keypress(0x4E)
             wait(0.2)
-            keyrelease(0x4C)
+            keyrelease(0x4E)
             HRP.Anchored = false
         elseif input.KeyCode == Enum.KeyCode.Seven then
             direction = 7
