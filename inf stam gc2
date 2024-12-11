@@ -1,6 +1,6 @@
 local aux = {}
 
-local getGc = getgc()
+local getGc = getgc
 local getInfo = debug.getinfo or getinfo
 local getUpvalue = debug.getupvalue or getupvalue or getupval
 local getConstants = debug.getconstants or getconstants or getconsts
@@ -28,8 +28,11 @@ local function matchConstants(closure, list)
 end
 
 local function searchClosure(script, name, upvalueIndex, constants)
-    for _i, v in pairs(getGc) do
-        local parentScript = rawget(getfenv(v), "script")
+    for _i, v in pairs(getGc()) do
+        local parentScript 
+            pcall(function()
+                parentScript = rawget(getfenv(v), "script")
+            end)
 
         if type(v) == "function" and 
             isLClosure(v) and 
