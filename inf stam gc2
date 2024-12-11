@@ -1,3 +1,6 @@
+local old = getloadedmodules
+getgenv().getloadedmodules = function() return old(true) end
+
 local aux = {}
 
 local getGc = getgc
@@ -29,7 +32,7 @@ end
 
 local function searchClosure(script, name, upvalueIndex, constants)
     for _i, v in pairs(getGc()) do
-        local parentScript 
+        local parentScript = nil
             pcall(function()
                 parentScript = rawget(getfenv(v), "script")
             end)
