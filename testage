@@ -417,9 +417,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             wait(0.1)
             bumpMatch(rightCode)
         end
-        if input.KeyCode == Enum.KeyCode.V then
-            spikemacro()
-        elseif input.KeyCode == Enum.KeyCode.Two then
+        if input.KeyCode == Enum.KeyCode.Two then
             deepCut *= -1
         elseif input.KeyCode == Enum.KeyCode.N then
             local targPosition
