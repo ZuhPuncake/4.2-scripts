@@ -245,7 +245,7 @@ function predictBallLandingX()
     player.Character.Humanoid.AutoRotate = false
     player.Character.Humanoid.WalkSpeed = 0
     HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(horizontalDisplacement.X, HRP.Position.Y, horizontalDisplacement.Z))
-    --player.Character.HumanoidRootPart.Velocity = Vector3.new(diveVelocity.X, 0, diveVelocity.Z)
+    player.Character.HumanoidRootPart.Velocity = Vector3.new(diveVelocity.X, 0, diveVelocity.Z)
     --keypress(0x4D)
     --virtualUser:TypeKey("0x6D")
     HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(horizontalDisplacement.X, HRP.Position.Y, horizontalDisplacement.Z))
