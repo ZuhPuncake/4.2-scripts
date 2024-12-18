@@ -246,11 +246,10 @@ function predictBallLandingX()
     player.Character.Humanoid.WalkSpeed = 0
     HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(horizontalDisplacement.X, HRP.Position.Y, horizontalDisplacement.Z))
     player.Character.HumanoidRootPart.Velocity = Vector3.new(diveVelocity.X, 0, diveVelocity.Z)
-    --keypress(0x4D)
-    --virtualUser:TypeKey("0x6D")
+	keypress(0x4B) -- dive button
     HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(horizontalDisplacement.X, HRP.Position.Y, horizontalDisplacement.Z))
-    --wait(0.03)  
-    --keyrelease(0x4D)
+	wait(0.03)
+	keyrelease(0x4B) -- dive button release
 end
 
 -- Auto Rec Predict
@@ -306,9 +305,6 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         elseif input.KeyCode == Enum.KeyCode.Three then
             setCurrentBall()
             predictBallLandingX()
-            keypress(0x4B)
-            wait(0.01)
-            keyrelease(0x4B)
         elseif input.KeyCode == Enum.KeyCode.F6 then
             playAnimation(player.Character, readyId)
         elseif input.KeyCode == Enum.KeyCode.F8 then
@@ -649,4 +645,3 @@ function spikemacro()
     wait(0.001)
     keyrelease(0x43)
 end
-
