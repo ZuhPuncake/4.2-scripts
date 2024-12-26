@@ -1,0 +1,108 @@
+repeat wait() until workspace:FindFirstChild("Ball")
+
+-- Services
+local RunService = game:GetService("RunService")
+
+-- Custom gravity (positive number).
+-- Note: In Roblox, workspace.Gravity is ~196.2 by default (Earth gravity scaled),
+--       but here we’ll use the user-defined gravity = 50 for demonstration.
+local GRAVITY = 50  
+
+-- Create a marker to show the predicted landing position
+local Marker = Instance.new("Part")
+Marker.Name = "Marker"
+Marker.Size = Vector3.new(2, 2, 2)
+Marker.Shape = Enum.PartType.Ball
+Marker.BrickColor = BrickColor.new("Toothpaste")
+Marker.CanCollide = false
+Marker.Anchored = true
+Marker.Parent = workspace
+Marker.Transparency = 1
+Marker.Material = Enum.Material.Neon
+
+--[[
+  PHYSICS_STUFF(velocity, position)
+  ----------------------------------
+  1) Solves the equation y(t) = y0 + Vy*t - (1/2)*g*t^2 = 0 for t.
+     This yields two roots (times). One might be in the "past"
+     (negative or physically not relevant), and the other is
+     the actual time in the future when the ball lands.
+  2) We pick the *positive* root that corresponds to the next landing event.
+  3) We then use that t to compute the horizontal displacement.
+--]]
+
+local function PHYSICS_STUFF(velocity, position)
+    local y0 = position.Y               -- Current height
+    local vy = velocity.Y               -- Current vertical velocity
+    local discriminant = vy^2 + 2*GRAVITY*y0
+
+    -- If the discriminant is negative, theoretically it never hits y=0 again
+    -- (or it’s already on the ground). For safety, return current XZ.
+    if discriminant < 0 then
+        return Vector3.new(position.X, 0, position.Z)
+    end
+
+    -- Solve for t using the standard quadratic formula, given:
+    --    y(t) = y0 + vy*t - (1/2)*g*t^2 = 0
+    -- =>  -0.5*g*t^2 + vy*t + y0 = 0
+    -- a = -0.5*g, b = vy, c = y0
+    -- t = [ -b ± sqrt(b^2 - 4ac ) ] / (2a)
+    -- but here a = -0.5*g => 2a = -g
+    --
+    -- We'll define it as:  t = [ -vy ± sqrt(vy^2 + 2*g*y0) ] / (-g)
+    local sqrtDisc = math.sqrt(discriminant)
+
+    local t1 = (-vy + sqrtDisc) / -GRAVITY
+    local t2 = (-vy - sqrtDisc) / -GRAVITY
+
+    -- We only care about the *positive* root that represents
+    -- the *future* time at which the ball will be on the ground again.
+    -- Depending on vy (up or down), one of these might be negative.
+    local candidateTimes = {}
+    if t1 > 0 then table.insert(candidateTimes, t1) end
+    if t2 > 0 then table.insert(candidateTimes, t2) end
+
+    -- If both are positive, we usually want the *earliest* positive time
+    -- (i.e., the smaller one) because that’s the next time it touches ground.
+    local timeToLand
+    if #candidateTimes == 0 then
+        -- No positive time => no future ground contact from this state
+        -- (or it's already on the ground). Just pick y=0 directly.
+        timeToLand = 0
+    elseif #candidateTimes == 1 then
+        timeToLand = candidateTimes[1]
+    else
+        timeToLand = math.min(candidateTimes[1], candidateTimes[2])
+    end
+
+    -- Horizontal velocity (no horizontal acceleration)
+    local horizontalVelocity = Vector3.new(velocity.X, 0, velocity.Z)
+
+    -- Where does the ball land horizontally after "timeToLand" seconds?
+    local landingPosition = position + horizontalVelocity * timeToLand
+
+    -- Force the Y component to 0 so the marker is on the "ground"
+    return Vector3.new(landingPosition.X, 0, landingPosition.Z)
+end
+
+-- Use BindToRenderStep to update the Marker each frame
+RunService:BindToRenderStep("VisualizeLandingPosition",
+    Enum.RenderPriority.Camera.Value,
+    function()
+        Marker.Transparency = 0.5
+
+        -- Find your ball model(s)
+        for _, ballModel in ipairs(workspace:GetChildren()) do
+            if ballModel:IsA("Model") and ballModel.Name == "Ball" then
+                -- We assume there's a "BallPart" with a Velocity value.
+                local ball = ballModel:FindFirstChild("BallPart")
+                if ball then
+                    local initialVelocity = ballModel.Velocity
+                    local landingPosition = PHYSICS_STUFF(initialVelocity.Value, ball.Position)
+
+                    Marker.CFrame = CFrame.new(landingPosition)
+                end
+            end
+        end
+    end
+)
