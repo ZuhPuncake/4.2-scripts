@@ -1,174 +1,111 @@
-local teamSide = -1
-local spikeMode = 1
+-- RSD with cooldown 
 
 
-local player = game.Players.LocalPlayer
+-- GLOBALS 
+local clamp = math.clamp
+local round = math.round
+local abs = math.abs
+local huge = math.huge
+local random = math.random
+local floor = math.floor
+local rad = math.rad
+
+local match = string.match
+local sub = string.sub
+
+local v3 = Vector3.new
+local v2 = Vector2.new
+local u2 = UDim2.new
+local CF = CFrame.new
+local RGB = Color3.fromRGB
+local tween = TweenInfo.new
+
+local drawing = Drawing.new
+
+local Space = game:GetService("Workspace")
 local Players = game:GetService("Players")
-local HRP = player.Character.HumanoidRootPart
+local Player = game:GetService("Players").LocalPlayer
+local Humanoid = Player.Character.Humanoid
+local Mouse = Player:GetMouse()
+local Camera = Space.CurrentCamera
+local RES = game:GetService("ReplicatedStorage")
+
+local RS = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
+local LIGHT = game:GetService("Lighting")
+
+local virtualUser = game:GetService('VirtualUser')
+local player = game.Players.LocalPlayer
+local HRP = player.Character.HumanoidRootPart
+
+local deepCut = math.rad(70)
+
+---------------------------------------------------------
+
+-- Drawing Stuff
+
+local reacting = false
+local centerX = 1280
+local centerY = 708
+
+local dot = Drawing.new("Circle")
+dot.Visible = true
+dot.Radius = 5 -- Change the radius to make the dot smaller or larger
+dot.Position = Vector2.new(centerX, centerY)
+dot.Color = Color3.fromRGB(255, 0, 0) -- Change the color of the dot
+dot.Filled = true
+dot.Thickness = 1
+
+----------------------------------------------------------
+
+
+-- AutoSet Globals
+local keyPowers = {Enum.KeyCode.KeypadZero, Enum.KeyCode.KeypadOne, Enum.KeyCode.KeypadTwo, Enum.KeyCode.KeypadThree, Enum.KeyCode.KeypadFour, Enum.KeyCode.KeypadFive, Enum.KeyCode.KeypadSix, Enum.KeyCode.KeypadSeven, Enum.KeyCode.KeypadEight, Enum.KeyCode.KeypadNine}
+local setMods = {Enum.KeyCode.Up, Enum.KeyCode.Down, Enum.KeyCode.Left, Enum.KeyCode.Right} -- Jump, Stop, Bump, Net
+local trueMods = {"j", "s", "b", "n"}
+local leftpowerListen = false
+local rightpowerListen = false
+local leftmodListen = false
+local rightmodListen = false
+local leftCode = ""
+local leftPower = ""
+local rightCode = ""
+local rightPower = ""
+local leftJump = false
+local rightJump = false
+local stop = false
+local leftAim = -22
+local rightAim = 22
+local teamSide = 1
+
+
+-- Serve Globals
+local curve = 1
+local direction = 0
+
+local readyId = "rbxassetid://3851569363"
+local tossId = "rbxassetid://3851571601"
+
+Space.ServeLF.Size = Vector3.new(0.001, 1, 0.001)
+Space.BackrowLF.Size = Vector3.new(0.001, 1, 0.001)
+
+
+-- Dive Globals
+local gravity = 50 -- Value of gravity
+
+local delay = 0.3  -- Dive Cooldown
+local lastKeyPressTime = 0
 
 local partNameToCheck = "Ball"
 local currentBall
 local balls = {}
-local time = 0.3
-local deepCut = math.rad(74)
 
-local indicatorFolder = Instance.new("Folder", game:GetService("Workspace"))
-indicatorFolder.Name = "indic"
-local indicators = game.Workspace.indic
-
-local indicatorFolder2 = Instance.new("Folder", game:GetService("Workspace"))
-indicatorFolder2.Name = "indic2"
-local indicators2 = game.Workspace.indic2
-
-local transparency = 1
-local ysize = 2
-
-local filterTable = {}
-local indicatorsArray = {}
-local playersArray = {}
-local possibleSpots = {}
-local farthestPart = nil
-local farthestDistance = nil
-
-local ovParams = OverlapParams.new()
-ovParams.FilterDescendantsInstances = {indicators}
-ovParams.CollisionGroup = "Default"
-ovParams.FilterType = Enum.RaycastFilterType.Whitelist
-ovParams.MaxParts = 0
-
-local ovParams2 = OverlapParams.new()
-ovParams2.FilterDescendantsInstances = {indicators2}
-ovParams2.CollisionGroup = "Default"
-ovParams2.FilterType = Enum.RaycastFilterType.Whitelist
-ovParams2.MaxParts = 0
+------------------------------------------------------------
 
 
+-- Ball Added
 
-
--- Walls Creation
-local function wallsCreation()
-    local wallsFolder = Instance.new("Folder", game:GetService("Workspace"))
-    wallsFolder.Name = "Walls"
-
-    local part1 = Instance.new("Part", game.Workspace.Walls)
-    part1.Name = "wall"
-    part1.Anchored = true
-    part1.CanCollide = false
-    part1.Shape = Enum.PartType.Block
-    part1.BrickColor = BrickColor.new(21)
-    part1.Material = Enum.Material.Neon
-    part1.Transparency = 1
-    part1.Size = Vector3.new(1, 300, 103)
-    part1.Position = Vector3.new(30, 0, 0)
-
-    local part2 = Instance.new("Part", game.Workspace.Walls)
-    part2.Name = "wall"
-    part2.Anchored = true
-    part2.CanCollide = false
-    part2.Shape = Enum.PartType.Block
-    part2.BrickColor = BrickColor.new(21)
-    part2.Material = Enum.Material.Neon
-    part2.Transparency = 1
-    part2.Size = Vector3.new(62, 300, 1)
-    part2.Position = Vector3.new(0, 0, 52)
-
-    local part3 = Instance.new("Part", game.Workspace.Walls)
-    part3.Name = "wall"
-    part3.Anchored = true
-    part3.CanCollide = false
-    part3.Shape = Enum.PartType.Block
-    part3.BrickColor = BrickColor.new(21)
-    part3.Material = Enum.Material.Neon
-    part3.Transparency = 1
-    part3.Size = Vector3.new(1, 300, 103)
-    part3.Position = Vector3.new(-30, 0, 0)
-
-    local part4 = Instance.new("Part", game.Workspace.Walls)
-    part4.Name = "wall"
-    part4.Anchored = true
-    part4.CanCollide = false
-    part4.Shape = Enum.PartType.Block
-    part4.BrickColor = BrickColor.new(21)
-    part4.Material = Enum.Material.Neon
-    part4.Transparency = 1
-    part4.Size = Vector3.new(62, 300, 1)
-    part4.Position = Vector3.new(0, 0, -52)
-end
-
-wallsCreation()
-
-local walls = game.Workspace:FindFirstChild("Walls")
-
-
-
-
--- Side Picker (Auto Block)
-function sidePicker()
-    for i = 0, 24, 2 do
-        for j = 1, 47, 2 do
-            local part1 = Instance.new("Part", indicators)
-            part1.Name = "indicator"
-            part1.Anchored = true
-            part1.CanCollide = false
-            part1.Shape = Enum.PartType.Ball
-            part1.BrickColor = BrickColor.new(21)
-            part1.Material = Enum.Material.Neon
-            part1.Transparency = transparency
-            part1.Size = Vector3.new(2, ysize, 2)
-            part1.Position = Vector3.new(i, 0, j)
-            table.insert(indicatorsArray, part1)
-
-            local part2 = Instance.new("Part", indicators)
-            part2.Name = "indicator"
-            part2.Anchored = true
-            part2.CanCollide = false
-            part2.Shape = Enum.PartType.Ball
-            part2.BrickColor = BrickColor.new(21)
-            part2.Material = Enum.Material.Neon
-            part2.Transparency = transparency
-            part2.Size = Vector3.new(2, ysize, 2)
-            part2.Position = Vector3.new(-i, 0, j)
-            table.insert(indicatorsArray, part2)
-        end
-    end
-    for i = 0, 24, 2 do
-        for j = -1, -47, -2 do
-            local part3 = Instance.new("Part", indicators2)
-            part3.Name = "indicator"
-            part3.Anchored = true
-            part3.CanCollide = false
-            part3.Shape = Enum.PartType.Ball
-            part3.BrickColor = BrickColor.new(21)
-            part3.Material = Enum.Material.Neon
-            part3.Transparency = transparency
-            part3.Size = Vector3.new(2, ysize, 2)
-            part3.Position = Vector3.new(i, 0, j)
-            table.insert(indicatorsArray, part3)
-
-            local part4 = Instance.new("Part", indicators2)
-            part4.Name = "indicator"
-            part4.Anchored = true
-            part4.CanCollide = false
-            part4.Shape = Enum.PartType.Ball
-            part4.BrickColor = BrickColor.new(21)
-            part4.Material = Enum.Material.Neon
-            part4.Transparency = transparency
-            part4.Size = Vector3.new(2, ysize, 2)
-            part4.Position = Vector3.new(-i, 0, j)
-            table.insert(indicatorsArray, part4)
-        end
-    end
-end
-
-do
-    sidePicker()
-end
-
-
-
--- Luka Doncic (Ball Handlers)
-local function onPartAdded(part)
+function onPartAdded(part)
     -- Check if the added part matches the name we are looking for
     if part.Name == partNameToCheck then
         --currentBall = part
@@ -176,7 +113,7 @@ local function onPartAdded(part)
     end
 end
 
-local function onPartRemoved(part)
+function onPartRemoved(part)
     -- Check if the added part matches the name we are looking for
     if part.Name == partNameToCheck then
         --currentBall = part
@@ -190,13 +127,13 @@ local function onPartRemoved(part)
     end
 end
 
-local function ballDistance(point1, point2)
+function ballDistance(point1, point2)
     local dx = point2.X - point1.X
     local dz = point2.Z - point1.Z
     return math.sqrt(dx * dx + dz * dz)
 end
 
-local function setCurrentBall()
+function setCurrentBall()
     local closestBallDistance
     local closestBall
     if #balls ~= 0 then 
@@ -212,28 +149,127 @@ local function setCurrentBall()
             end
         end
     end
-    if closestBall then
-        currentBall = closestBall
-    end
+    currentBall = closestBall
 end
-
-local function predictBallPosition()
-    local initialPosition = currentBall.Position.Value
-    local initialVelocity = currentBall.Velocity.Value
-    local velocityX = initialVelocity.X 
-    local velocityZ = initialVelocity.Z
-    local newPositionX = initialPosition.X + (velocityX * time)
-    local newPositionZ = initialPosition.Z + (velocityZ * time)
-    return Vector3.new(newPositionX, initialPosition.Y, newPositionz)
-end 
 
 game.Workspace.ChildAdded:Connect(onPartAdded)
 game.Workspace.ChildRemoved:Connect(onPartRemoved)
 
+-----------------------------------------------------------
 
 
--- Jump Direction for Glide Spike
-local function jumpTowardsTarget(player, targetPosition)
+-- Line ESP 
+local ESP_API = {}
+function ESP_API.NewLine(info)
+    local l = drawing("Line")
+    l.Visible = info.Visible or false
+    l.Transparency = info.Transparency or 1
+    l.Color = info.Color or RGB(0,0,0) 
+
+    l.Thickness = info.Thickness or 1
+    l.From = v2(0,0)
+    l.To = v2(0,0)
+    return l
+end
+
+
+function ESP_API.AddPlayer(plr)
+    repeat wait() until plr.Character ~= nil and plr.Character:FindFirstChildOfClass("Humanoid")
+
+    local plr_name = plr.Name
+    local viewTracer = ESP_API.NewLine({Color = RGB(255, 255, 0), Thickness = 2})
+
+    local c
+    c = RS.RenderStepped:Connect(function()
+        if Player.Character ~= nil and plr.Character ~= nil and plr.TeamColor ~= Player.TeamColor and plr.Character:FindFirstChildOfClass("Humanoid") and plr.Character:FindFirstChildOfClass("Humanoid").Health > 0 then
+            local root_part = plr.Character:FindFirstChild("HumanoidRootPart") or plr.Character.PrimaryPart
+            local Hmnd = plr.Character:FindFirstChildWhichIsA("Humanoid")
+            
+            local rootpos, vis = Camera:WorldToViewportPoint(root_part.Position)
+            local _,vis_check = Camera:WorldToViewportPoint((root_part.CFrame*CF(0,0,-15)).p)
+            local dirpos = Camera:WorldToViewportPoint((root_part.CFrame*CF(0,0,-40)).p)
+
+            viewTracer.From = v2(rootpos.X, rootpos.Y)
+            viewTracer.To = v2(dirpos.X, dirpos.Y)
+            if vis and vis_check and Hmnd:GetState() == Enum.HumanoidStateType.Freefall then viewTracer.Visible = true else viewTracer.Visible = false end
+        else
+            viewTracer.Visible = false
+            if Players:FindFirstChild(plr_name) == nil then
+                viewTracer:Remove()
+                c:Disconnect()
+            end
+        end
+    end)
+end
+
+do
+    local t = Players:GetChildren()
+    for i = 1, #t do
+        local v = t[i]
+        if v.Name ~= Player.Name then
+            coroutine.wrap(ESP_API.AddPlayer)(v)
+        end
+    end
+end
+
+Players.ChildAdded:Connect(function(v)
+    coroutine.wrap(ESP_API.AddPlayer)(v)
+end)
+
+------------------------------------------------------------
+
+
+-- Dive Script
+function predictBallLandingX()
+    -- Calculate time to reach Y=0
+    local currentYVelocity = currentBall.Velocity.Value.Y
+    if currentYVelocity < 0 then
+        currentYVelocity = currentYVelocity * -1
+    end
+    local discriminant = math.sqrt(currentYVelocity^2 + 2 * 50 * currentBall.Position.Value.Y)
+    local timeToZeroY = (-currentYVelocity + discriminant) / gravity
+    local diveVelocity
+    
+    -- Calculate horizontal displacement
+    local displacementOriginal = currentBall.Velocity.Value * timeToZeroY
+    local horizontalDisplacement = currentBall.Position.Value + displacementOriginal
+
+    local direction = (Vector3.new(horizontalDisplacement.X, HRP.Position.Y, horizontalDisplacement.Z) - HRP.Position).unit
+    if (HRP.Position - horizontalDisplacement).magnitude > 17 then
+        diveVelocity = direction * 190
+    elseif (HRP.Position - horizontalDisplacement).magnitude > 5 then
+        diveVelocity = direction * 175
+    else 
+        diveVelocity = direction * 140
+    end
+    player.Character.Humanoid.AutoRotate = false
+    player.Character.Humanoid.WalkSpeed = 0
+    HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(horizontalDisplacement.X, HRP.Position.Y, horizontalDisplacement.Z))
+    player.Character.HumanoidRootPart.Velocity = Vector3.new(diveVelocity.X, 0, diveVelocity.Z)
+	keypress(0x4B) -- dive button
+    HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(horizontalDisplacement.X, HRP.Position.Y, horizontalDisplacement.Z))
+	wait(0.03)
+	keyrelease(0x4B) -- dive button release
+end
+
+-- Auto Rec Predict
+local function predictBallLanding(currentBall)
+    local currentYVelocity = currentBall.Velocity.Value.Y
+    if currentYVelocity < 0 then
+        currentYVelocity = currentYVelocity * -1
+    end
+    local discriminant = math.sqrt(currentYVelocity^2 + 2 * 50 * currentBall.Position.Value.Y)
+    local timeToZeroY = (-currentYVelocity + discriminant) / gravity
+    local diveVelocity
+    
+    -- Calculate horizontal displacement
+    local displacementOriginal = currentBall.Velocity.Value * timeToZeroY
+    local horizontalDisplacement = currentBall.Position.Value + displacementOriginal
+    return Vector3.new(horizontalDisplacement.X, 0, horizontalDisplacement.Z)
+end
+
+
+function jumpTowardsTarget(player, targetPosition)
     -- Calculate the direction from player's current position to the target position
     local direction = (targetPosition - player.Character.HumanoidRootPart.Position).unit
 
@@ -247,738 +283,365 @@ local function jumpTowardsTarget(player, targetPosition)
     player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
 end
 
-local function jumpTowardsTarget2(player, targetPosition)
-    -- Calculate the direction from player's current position to the target position
-    local direction = (targetPosition - player.Character.HumanoidRootPart.Position).unit
-
-    -- Set the jump power (adjust this value as needed)
-    local jumpPower = 30
-
-    -- Calculate the jump velocity based on direction and jump power
-    local jumpVelocity = direction * jumpPower
-
-    -- Apply the jump velocity to the player's HumanoidRootPart
-    player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
-end
 
 
 
-
--- Input Handler
-UIS.InputBegan:Connect(function(input) --Best way to do this
-    if input.KeyCode == Enum.KeyCode.V then
-        if teamSide == 1 then
-            ididathing(ovParams)
-        elseif teamSide == -1 then
-            ididathing(ovParams2)
-        end
-    elseif input.KeyCode == Enum.KeyCode.KeypadMultiply then
-        teamSide *= -1
-    elseif input.KeyCode == Enum.KeyCode.KeypadDivide then
-        deepCut *= -1
-    elseif input.KeyCode == Enum.KeyCode.Two then
-        deepCut *= -1
-    elseif input.KeyCode == Enum.KeyCode.R then
-        rebound()
-    elseif input.KeyCode == Enum.KeyCode.F4 then
-        if teamSide == 1 then 
-            glideSpike(ovParams)
-        elseif teamSide == -1 then
-            glideSpike(ovParams2)
-        end
-    elseif input.KeyCode == Enum.KeyCode.F3 then
-        local targPosition
-        if teamSide == -1 then
-            HRP.Tilt.D = 350
-            HRP.Tilt.P = 2700
-            player.Character.Humanoid.AutoRotate = false
-            HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
-            if HRP.Position.X > 0 then
-                player.Character.Humanoid.HipHeight = 3.5
-                HRP.CFrame *= CFrame.Angles(0, deepCut, 0)
-                keypress(0x63)
+-- Keybinds
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if table.find(keyPowers, input.KeyCode) and leftpowerListen == true then
+        leftPower = leftPower .. tostring((table.find(keyPowers, input.KeyCode)) - 1)
+    elseif table.find(keyPowers, input.KeyCode) and rightpowerListen == true then
+        rightPower = rightPower .. tostring((table.find(keyPowers, input.KeyCode)) - 1)
+    end
+    if table.find(setMods, input.KeyCode) and leftmodListen == true then
+        leftCode = leftCode .. trueMods[table.find(setMods, input.KeyCode)]
+    elseif table.find(setMods, input.KeyCode) and rightmodListen == true then
+        rightCode = rightCode .. trueMods[table.find(setMods, input.KeyCode)]
+        print(rightCode)
+    end
+    if not gameProcessed then
+        if input.KeyCode == Enum.KeyCode.Semicolon then
+            flick()
+        elseif input.KeyCode == Enum.KeyCode.Three then
+            setCurrentBall()
+            predictBallLandingX()
+        elseif input.KeyCode == Enum.KeyCode.F6 then
+            playAnimation(player.Character, readyId)
+        elseif input.KeyCode == Enum.KeyCode.F8 then
+            playAnimation(player.Character, tossId)
+        elseif input.KeyCode == Enum.KeyCode.F5 then
+            if reacting == false then 
+                reacting = true
+                dot.Color = Color3.fromRGB(0, 255, 0)
                 setCurrentBall()
-                targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
-                jumpTowardsTarget(player, targPosition)
-                keypress(0x20)
-                wait(0.2)
-                keypress(0x77)
-                wait(0.4)
-                keyrelease(0x20)
-                keyrelease(0x77)
-                keyrelease(0x63)
-                player.Character.Humanoid.HipHeight = 2
+                autoReceive(currentBall)
+            else 
+                dot.Color = Color3.fromRGB(255, 0, 0)
+                reacting = false
+            end
+        elseif input.KeyCode == Enum.KeyCode.Six then
+            direction = 15
+        elseif input.KeyCode == Enum.KeyCode.L then
+            HRP.Anchored = true
+            keypress(0x4E)
+            wait(0.2)
+            keyrelease(0x4E)
+            HRP.Anchored = false
+        elseif input.KeyCode == Enum.KeyCode.Seven then
+            direction = 7
+        elseif input.KeyCode == Enum.KeyCode.Eight then
+            direction = 0
+        elseif input.KeyCode == Enum.KeyCode.Nine then
+            direction = -7
+        elseif input.KeyCode == Enum.KeyCode.Zero then
+            direction = -13
+        elseif input.KeyCode == Enum.KeyCode.Four then
+            curveSpawn()
+        elseif input.KeyCode == Enum.KeyCode.Minus then
+            curve = 1
+        elseif input.KeyCode == Enum.KeyCode.Equals then
+            curve = -1
+        elseif input.KeyCode == Enum.KeyCode.Five then
+            if curve == 1 then
+                direction = -20
+            elseif curve == -1 then
+                direction = 24
+            end
+        elseif input.KeyCode == Enum.KeyCode.KeypadPlus then
+            rightpowerListen = false
+            rightmodListen = false
+            leftpowerListen = true
+            leftmodListen = true
+            leftCode = ""
+            leftPower = ""
+            leftJump = false
+        elseif input.KeyCode == Enum.KeyCode.KeypadMinus then
+            leftpowerListen = false
+            leftmodListen = false
+            rightpowerListen = true
+            rightmodListen = true
+            rightCode = ""
+            rightPower = ""
+            rightJump = false
+        elseif input.KeyCode == Enum.KeyCode.KeypadMultiply then
+            leftAim = leftAim * -1
+            rightAim = rightAim * -1
+            teamSide = teamSide * -1
+        end
+
+        --[[if table.find(keyPowers, input.KeyCode) and leftpowerListen == true then
+            leftPower = leftPower .. tostring((table.find(keyPowers, input.KeyCode)) - 1)
+        elseif table.find(keyPowers, input.KeyCode) and rightpowerListen == true then
+            rightPower = rightPower .. tostring((table.find(keyPowers, input.KeyCode)) - 1)
+        end
+        if table.find(setMods, input.KeyCode) and leftmodListen == true then
+            leftCode = leftCode .. trueMods[table.find(setMods, input.KeyCode)]
+        elseif table.find(setMods, input.KeyCode) and rightmodListen == true then
+            rightCode = rightCode .. trueMods[table.find(setMods, input.KeyCode)]
+            print(rightCode)
+        end]]--
+        --[[if input.KeyCode == Enum.KeyCode.Left then 
+            leftCode = leftCode .. "b"
+            print("HELLO")
+        elseif input.KeyCode == Enum.KeyCode.Left and rightmodListen == true then 
+            rightCode = rightCode .. "b"
+        end
+        if input.KeyCode == Enum.KeyCode.Right and leftmodListen == true then 
+            leftCode = leftCode .. "n"
+        elseif input.KeyCode == Enum.KeyCode.Right and rightmodListen == true then 
+            rightCode = rightCode .. "n"
+        end]]--
+
+
+        if input.KeyCode == Enum.KeyCode.KeypadPeriod then
+            leftpowerListen, leftmodListen, rightpowerListen, rightmodListen = false
+        elseif input.KeyCode == Enum.KeyCode.LeftBracket then
+            leftpowerListen, leftmodListen, rightpowerListen, rightmodListen = false
+            powerSet(leftPower)
+            stopMatch(leftCode)
+            netMatch(leftCode, leftAim)
+            jumpMatch(leftCode)
+            wait(0.1)
+            bumpMatch(leftCode)
+        elseif input.KeyCode == Enum.KeyCode.RightBracket then
+            leftpowerListen, leftmodListen, rightpowerListen, rightmodListen = false
+            print(rightCode)
+            powerSet(rightPower)
+            stopMatch(rightCode)
+            netMatch(rightCode, rightAim)
+            jumpMatch(rightCode)
+            wait(0.1)
+            bumpMatch(rightCode)
+        end
+        if input.KeyCode == Enum.KeyCode.Two then
+            deepCut *= -1
+        elseif input.KeyCode == Enum.KeyCode.N then
+            local targPosition
+            if teamSide == -1 then
+                HRP.Tilt.D = 350
+                HRP.Tilt.P = 2700
+                player.Character.Humanoid.AutoRotate = false
+                HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
+                if HRP.Position.X > 0 then
+                    HRP.CFrame *= CFrame.Angles(0, deepCut, 0)
+                    keypress(0x43)
+                    setCurrentBall()
+                    targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
+                    local direction = (targPosition - player.Character.HumanoidRootPart.Position).unit
+                    local jumpVelocity = direction * 38
+                    player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
+                    keypress(0x20)
+                    wait(0.03)
+                    keypress(0x57)
+                    wait(0.4)
+                    keyrelease(0x20)
+                    keyrelease(0x57)
+                    keyrelease(0x43)
+                else
+                    HRP.CFrame *= CFrame.Angles(0, deepCut * -1, 0)
+                    keypress(0x43)
+                    setCurrentBall()
+                    targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
+                    local direction = (targPosition - player.Character.HumanoidRootPart.Position).unit
+                    local jumpVelocity = direction * 38
+                    player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
+                    keypress(0x20)
+                    wait(0.03)
+                    keypress(0x57)
+                    wait(0.4)
+                    keyrelease(0x20)
+                    keyrelease(0x57)
+                    keyrelease(0x43)
+                end
             else
-                player.Character.Humanoid.HipHeight = 3.5
-                HRP.CFrame *= CFrame.Angles(0, deepCut * -1, 0)
-                keypress(0x63)
-                setCurrentBall()
-                targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
-                jumpTowardsTarget(player, targPosition)
-                keypress(0x20)
-                wait(0.2)
-                keypress(0x77)
-                wait(0.4)
-                keyrelease(0x20)
-                keyrelease(0x77)
-                keyrelease(0x63)
-                player.Character.Humanoid.HipHeight = 2
+                HRP.Tilt.D = 350
+                HRP.Tilt.P = 2700
+                player.Character.Humanoid.AutoRotate = false
+                HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
+                if HRP.Position.X < 0 then
+                    HRP.CFrame *= CFrame.Angles(0, deepCut, 0)
+                    keypress(0x43)
+                    setCurrentBall()
+                    targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
+                    local direction = (targPosition - player.Character.HumanoidRootPart.Position).unit
+                    local jumpVelocity = direction * 38
+                    player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
+                    keypress(0x20)
+                    wait(0.03)
+                    keypress(0x57)
+                    wait(0.4)
+                    keyrelease(0x20)
+                    keyrelease(0x57)
+                    keyrelease(0x43)
+                else
+                    HRP.CFrame *= CFrame.Angles(0, deepCut * -1, 0)
+                    keypress(0x43)
+                    setCurrentBall()
+                    targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
+                    local direction = (targPosition - player.Character.HumanoidRootPart.Position).unit
+                    local jumpVelocity = direction * 38
+                    player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
+                    keypress(0x20)
+                    wait(0.03)
+                    keypress(0x57)
+                    wait(0.4)
+                    keyrelease(0x20)
+                    keyrelease(0x57)
+                    keyrelease(0x43)
+                end
+            end
+            HRP.Tilt.D = 500
+            HRP.Tilt.P = 3000
+        end
+    end
+end)
+
+
+---------------------------------------------------------------
+
+-- Auto Receive
+function autoReceive(part)
+    local previousVelocity = part:WaitForChild("Velocity")
+    local previousXVelocity = previousVelocity.Value.X
+    local landingSpot
+    local d
+    d = RS.Stepped:Connect(function()
+        if reacting and part:IsDescendantOf(Workspace) then
+            local currentXVelocity = part.Velocity.Value.X
+            if currentXVelocity ~= previousXVelocity then
+                if not landingSpot then
+                    landingSpot = predictBallLanding(part)
+                end
+                previousXVelocity = currentXVelocity
+            end
+            if landingSpot then
+                Humanoid:MoveTo(landingSpot)
             end
         else
-            HRP.Tilt.D = 350
-            HRP.Tilt.P = 2700
+            previousXVelocity = nil
+            d:Disconnect()
+        end
+    end)
+end
+
+
+-- Serve Stuff
+function curveSpawn()
+    local args = {
+        [1] = "SpawnBall",
+        [2] = {[1] = "ServeToss", [2] = 1, [3] = curve}
+    }
+    game:GetService("ReplicatedStorage").Remotes.PlayerAction:FireServer(unpack(args))
+end
+
+function flick()
+    player.Character.Humanoid.AutoRotate = false    
+    HRP.CFrame *= CFrame.Angles(0, math.rad(direction), 0)
+    wait(1)
+    player.Character.Humanoid.AutoRotate = true
+end
+
+function playAnimation(character, animationId)
+    -- Check if the character and humanoid exist
+    if character and character:FindFirstChild("Humanoid") then
+        -- Load the animation
+        local animation = Instance.new("Animation")
+        animation.AnimationId = animationId
+        
+        -- Play the animation
+        local humanoid = character.Humanoid
+        local animationTrack = humanoid:LoadAnimation(animation)
+        animationTrack:Play()
+    end
+end
+
+--------------------------------------------------------------
+
+
+-- AutoSet Stuff
+function powerSet(pwr)
+    for i = 1, 15 do
+        virtualUser:TypeKey("0x71")
+    end
+    if tonumber(pwr) > 1 then
+        for i = 1, tonumber(pwr) - 1 do
+            virtualUser:TypeKey("0x65")
+        end
+    end
+end
+
+function stopMatch(code)
+    if code:match("s") and stop == false then
+        virtualUser:TypeKey("0x62")
+        stop = true
+    elseif not code:match("s") and stop == true then
+        virtualUser:TypeKey("0x62")
+        stop = false
+    end
+end
+
+function jumpMatch(code)
+    if code:match("j") then
+        virtualUser:TypeKey("0x77")
+        virtualUser:TypeKey("0x73")
+        virtualUser:TypeKey("0x61")
+        virtualUser:TypeKey("0x64")
+        wait(0.01)
+        keypress(0x20)
+        wait(0.00001)
+        keyrelease(0x20)
+    end
+end
+
+function netMatch(code, coord)
+    if not code:match("n") and HRP.Position.Z < 2 and teamSide == 1 then
+        local position
+        if coord == leftAim then
+            local tempPos = Vector3.new
             player.Character.Humanoid.AutoRotate = false
-            HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
-            if HRP.Position.X < 0 then
-                player.Character.Humanoid.HipHeight = 3.5
-                HRP.CFrame *= CFrame.Angles(0, deepCut, 0)
-                keypress(0x63)
-                setCurrentBall()
-                targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
-                jumpTowardsTarget(player, targPosition)
-                keypress(0x20)
-                wait(0.2)
-                keypress(0x77)
-                wait(0.4)
-                keyrelease(0x20)
-                keyrelease(0x77)
-                keyrelease(0x63)
-                player.Character.Humanoid.HipHeight = 2
-            else
-                player.Character.Humanoid.HipHeight = 3.5
-                HRP.CFrame *= CFrame.Angles(0, deepCut * -1, 0)
-                keypress(0x63)
-                setCurrentBall()
-                targPosition = Vector3.new(currentBall.Position.Value.X, 0, 0)
-                jumpTowardsTarget(player, targPosition)
-                keypress(0x20)
-                wait(0.2)
-                keypress(0x77)
-                wait(0.4)
-                keyrelease(0x20)
-                keyrelease(0x77)
-                keyrelease(0x63)
-                player.Character.Humanoid.HipHeight = 2
-            end
+            HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X - 1000000, HRP.Position.Y, 0))
+        elseif coord == rightAim then
+            player.Character.Humanoid.AutoRotate = false
+            HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X + 1000000, HRP.Position.Y, 0))
         end
-        HRP.Tilt.D = 500
-        HRP.Tilt.P = 3000
-    end
-end)
-
-
-
-
--- Auto Spike
-function ididathing(tempParams)
-    -- Spike Distance
-    setCurrentBall()
-    local longin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 48 + tonumber(math.abs(HRP.Position.Z)), tempParams)
-    local longout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 45 + tonumber(math.abs(HRP.Position.Z)), tempParams)
-
-    local newmidlongin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 44.5, tempParams)
-    local newmidlongout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 42.5, tempParams)
-
-    local midlongin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 42, tempParams)
-    local midlongout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 39, tempParams)
-
-    local newmidin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 38, tempParams)
-    local newmidout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 36, tempParams)
-
-    local midin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 35, tempParams)
-    local midout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 32, tempParams)
-
-    local shortmidin2 = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 31.5, tempParams)
-    local shortmidout2 = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 29, tempParams)
-
-    local shortmidin1 = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 28, tempParams)
-    local shortmidout1 = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 25, tempParams)
-
-    local shortin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 24, tempParams)
-    local shortout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 19, tempParams)
-    local bumpnetNetout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, 1), tempParams)
-    local netout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, (2 * tonumber(math.abs(HRP.Position.Z))) - 1), tempParams)
-    for i, v in pairs(longin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(longout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(newmidlongin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(newmidlongout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(midlongin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(midlongout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(newmidin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(newmidout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(midin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(midout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(shortmidin2) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(shortmidout2) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(shortmidin1) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(shortmidout1) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(shortin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(shortout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(netout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    if currentBall and currentBall.Position.Value.Z > 0.4 and currentBall.Position.Value.Z < -0.4 then
-        for i, v in pairs(bumpnetNetout) do
-            v.BrickColor = BrickColor.new(21)
+    elseif not code:match("n") and HRP.Position.Z > -2 and teamSide == -1 then
+        local position
+        if coord == leftAim then
+            player.Character.Humanoid.AutoRotate = false
+            HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X + 1000000, HRP.Position.Y, 0))
+        elseif coord == rightAim then
+            player.Character.Humanoid.AutoRotate = false
+            HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X - 1000000, HRP.Position.Y, 0))
         end
-    end
-    for i, v in pairs(longin) do
-        if v.BrickColor == BrickColor.new(37) then
-            table.insert(possibleSpots, v)
-            v.Transparency = 0.8
-        end
-    end
-
-    local tempArray = {}
-    local tempPlayerArray = {}
-    for i, v in ipairs(possibleSpots) do
-        table.insert(tempArray, v)
-    end
-    for i, v in ipairs(playersArray) do
-        table.insert(tempPlayerArray, v)
-    end
-    local finalArray, finalplayerArray = antiBlock(tempArray, tempPlayerArray)
-    farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
-    farthestPart.BrickColor = BrickColor.new(1)
-    farthestPart.Transparency = 0
-    
-    -- Tilt Handler
-    local tilt
-    if findDistance(farthestPart, player) < 26 then
-        tilt = true
-    elseif findDistance(farthestPart, player) < 29 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 1400
-    elseif findDistance(farthestPart, player) < 32 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 1100
-    elseif findDistance(farthestPart, player) < 36 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 800
-    elseif findDistance(farthestPart, player) < 38 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 550
-    elseif findDistance(farthestPart, player) < 42.5 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 300
-    elseif findDistance(farthestPart, player) < 44 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 150
-    end
-
-    -- Spike Inputs
-    keypress(0x57)
-    keypress(0x41)
-    keypress(0x53)
-    keypress(0x44)
-    keypress(0x43)
-    wait(0.01)
-    HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(farthestPart.Position.X, HRP.Position.Y, farthestPart.Position.Z)) -- AIM
-    keypress(0x20)  -- JUMP
-    wait(0.01)
-    keyrelease(0x57)
-    keyrelease(0x41)
-    keyrelease(0x53)
-    keyrelease(0x44)
-    keyrelease(0x43)
-    player.Character.Humanoid.AutoRotate = false
-    if tilt then  -- FORWARD TILT
-        keypress(0x57)
-        wait(0.05)
-        keyrelease(0x57)
-    end
-
-    -- Cleanup
-    table.clear(possibleSpots)
-    keyrelease(0x20)
-    player.Character.Humanoid.AutoRotate = true
-    for i, v in pairs(longin) do
-        v.BrickColor = BrickColor.new(21)
-        v.Transparency = 1
-    end
-    farthestPart.Transparency = 1
-    local farthestPart = nil
-    local farthestDistance = nil
-    longin = {}
-    longout = {}
-    shortin = {}
-    shortout = {}
-    task.wait(1)
-    HRP.Tilt.D = 500
-    HRP.Tilt.P = 3000
-end
-
-
--- Glide AutoSpike
-function glideSpike(tempParams)
-    local ballPrediction
-    setCurrentBall()
-    ballPrediction = predictBallPosition()
-    local longin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 48 + tonumber(math.abs(currentBall.Position.Value.Z)), tempParams)
-    local longout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 45 + tonumber(math.abs(currentBall.Position.Value.Z)), tempParams)
-
-    local newmidlongin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 44.5, tempParams)
-    local newmidlongout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 42.5, tempParams)
-
-    local midlongin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 42, tempParams)
-    local midlongout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 39, tempParams)
-
-    local newmidin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 38, tempParams)
-    local newmidout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 36, tempParams)
-
-    local midin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 35, tempParams)
-    local midout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 32, tempParams)
-
-    local shortmidin2 = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 31.5, tempParams)
-    local shortmidout2 = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 29, tempParams)
-
-    local shortmidin1 = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 28, tempParams)
-    local shortmidout1 = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 25, tempParams)
-
-    local shortin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 24, tempParams)
-    local shortout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 19, tempParams)
-    local bumpnetNetout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, 1), tempParams)
-    local netout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, (2 * tonumber(math.abs(currentBall.Position.Value.Z))) - 1), tempParams)
-    for i, v in pairs(longin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(longout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(newmidlongin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(newmidlongout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(midlongin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(midlongout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(newmidin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(newmidout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(midin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(midout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(shortmidin2) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(shortmidout2) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(shortmidin1) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(shortmidout1) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(shortin) do
-        v.BrickColor = BrickColor.new(37)
-    end
-    for i, v in pairs(shortout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    for i, v in pairs(netout) do
-        v.BrickColor = BrickColor.new(21)
-    end
-    if currentBall and currentBall.Position.Value.Z > 0.4 and currentBall.Position.Value.Z < -0.4 then
-        for i, v in pairs(bumpnetNetout) do
-            v.BrickColor = BrickColor.new(21)
-        end
-    end
-    for i, v in pairs(longin) do
-        if v.BrickColor == BrickColor.new(37) then
-            table.insert(possibleSpots, v)
-            v.Transparency = 0.8
-        end
-    end
-
-    local tempArray = {}
-    local tempPlayerArray = {}
-    for i, v in ipairs(possibleSpots) do
-        table.insert(tempArray, v)
-    end
-    for i, v in ipairs(playersArray) do
-        table.insert(tempPlayerArray, v)
-    end
-    local finalArray, finalplayerArray = antiBlock2(tempArray, currentBall, tempPlayerArray)
-    farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
-    farthestPart.BrickColor = BrickColor.new(1)
-    farthestPart.Transparency = 0
-    
-    -- Tilt Handler
-    local tilt
-    if findDistance2(farthestPart, currentBall) < 26 then
-        tilt = true
-    elseif findDistance2(farthestPart, currentBall) < 29 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 1400
-    elseif findDistance2(farthestPart, currentBall) < 32 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 1100
-    elseif findDistance2(farthestPart, currentBall) < 36 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 800
-    elseif findDistance2(farthestPart, currentBall) < 38 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 550
-    elseif findDistance2(farthestPart, currentBall) < 42.5 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 300
-    elseif findDistance2(farthestPart, currentBall) < 44 then
-        tilt = true
-        HRP.Tilt.D = 300
-        HRP.Tilt.P = 150
-    end
-
-    -- Spike Inputs
-    keypress(0x43)
-    wait(0.01)
-    --HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(farthestPart.Position.X, HRP.Position.Y, farthestPart.Position.Z)) -- AIM
-    local direction = (Vector3.new(farthestPart.Position.X, 0, farthestPart.Position.Z) - (Vector3.new(currentBall.Position.Value.X, 0, currentBall.Position.Value.Z))).unit
-    local targPosition = Vector3.new(currentBall.Position.Value.X, HRP.Position.Y, currentBall.Position.Value.Z)
-    HRP.CFrame = CFrame.lookAlong(HRP.Position, direction)
-    jumpTowardsTarget2(player, targPosition)
-    keypress(0x20)  -- JUMP
-    wait(0.01)
-    keyrelease(0x43)
-    player.Character.Humanoid.AutoRotate = false
-    if tilt then  -- FORWARD TILT
-        keypress(0x57)
-        wait(0.05)
-        keyrelease(0x57)
-    end
-
-    -- Cleanup
-    table.clear(possibleSpots)
-    keyrelease(0x20)
-    player.Character.Humanoid.AutoRotate = true
-    for i, v in pairs(longin) do
-        v.BrickColor = BrickColor.new(21)
-        v.Transparency = 1
-    end
-    farthestPart.Transparency = 1
-    local farthestPart = nil
-    local farthestDistance = nil
-    longin = {}
-    longout = {}
-    shortin = {}
-    shortout = {}
-    task.wait(1)
-    HRP.Tilt.D = 500
-    HRP.Tilt.P = 3000
-end
-
-
-
-
--- Array Handling
-do
-    playersArray = Players:GetChildren()
-end
-
-Players.ChildAdded:Connect(function(v)
-    table.insert(playersArray, v)
-end)
-
-Players.PlayerRemoving:Connect(function(v)
-    local found = table.find(playersArray, v)
-    if found then
-        table.remove(playersArray, found)
-    end
-end)
-
-
-
-
-
--- Find Distance Between Spot and Player
-function findDistance(spot, plr)
-    --print(math.sqrt(((plr.Character.HumanoidRootPart.Position.X - spot.Position.X)^2) + ((plr.Character.HumanoidRootPart.Position.Z - spot.Position.Z)^2)))
-    return math.sqrt(((plr.Character.HumanoidRootPart.Position.X - spot.Position.X)^2) + ((plr.Character.HumanoidRootPart.Position.Z - spot.Position.Z)^2))
-end
-
-function findDistance2(spot, plr)
-    --print(math.sqrt(((plr.Character.HumanoidRootPart.Position.X - spot.Position.X)^2) + ((plr.Character.HumanoidRootPart.Position.Z - spot.Position.Z)^2)))
-    return math.sqrt(((plr.Position.Value.X - spot.Position.X)^2) + ((plr.Position.Value.Z - spot.Position.Z)^2))
-end
-
-
-
--- Find Furthest Spot From Player
-function farthestFinder(spods, playas)
-    farthestDistance = nil
-    for i, v in pairs(spods) do
-        local closestDistance = nil
-        for j, u in pairs(playas) do
-            if u.TeamColor ~= player.TeamColor and u.TeamColor ~= BrickColor.new("White")then
-                local currentDistance = findDistance(v, u)
-                if farthestPart ~= nil and closestDistance ~=nil then
-                    if currentDistance < closestDistance then
-                        closestDistance = currentDistance
-                    end
-                elseif farthestPart ~= nil and closestDistance == nil then
-                    closestDistance = currentDistance
-                elseif farthestPart == nil then
-                    closestDistance = currentDistance
-                end
-            end
-        end
-        if farthestDistance == nil then
-            farthestDistance = closestDistance
-            farthestPart = v
-        elseif farthestDistance ~= nil and closestDistance > farthestDistance then
-            farthestPart = v
-        end
+    elseif not code:match("n") then
+        player.Character.Humanoid.AutoRotate = false
+        HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(coord, HRP.Position.Y, 0))
+    elseif code:match("n") then
+        player.Character.Humanoid.AutoRotate = false
+        HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
     end
 end
 
-
-
-
--- Rebound Script
-function rebound()
-    local rcParams = RaycastParams.new()
-    rcParams.FilterDescendantsInstances = {filterTable}
-    rcParams.FilterType = Enum.RaycastFilterType.Whitelist
-    local origin = Vector3.new(HRP.Position.X, HRP.Position.Y, HRP.Position.Z)
-    local direction = HRP.CFrame.LookVector * 15
-    local rcResult = workspace:Raycast(origin, direction, rcParams)
-    if rcResult then
-        keypress(0x78)
-        wait(0.001)
-        keyrelease(0x78)
-    end
-end
-
-
--- Anti Block 
-function isJumping(v)
-    -- Get the player's character
-    local character = v.Character
-    if character then
-        -- Get the Humanoid
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            -- Check if the Humanoid is currently jumping
-            return humanoid.FloorMaterial == Enum.Material.Air
-        end
-    end
-    return false
-end
-
-
-function findJumpingPlayers()
-    local jumpingPlayers = {}
-    for _, v in ipairs(Players:GetPlayers()) do
-        if v.TeamColor ~= player.TeamColor then
-            if isJumping(v) then
-                table.insert(jumpingPlayers, v)
-            end
-        end
-    end
-    return jumpingPlayers
-end
-
---[[function findJumpers()
-    local jumpingPlayers = findJumpingPlayers()
-    for _, v in ipairs(jumpingPlayers) do
-        print(player.Name .. " is jumping.")
-    end
-end]]--
-
-function calculateArea(x1, z1, x2, z2, x3, z3)
-	return math.abs((x1*(z2-z3) + x2*(z3-z1) + x3*(z1-z2)) / 2.0)
-end
-
-function isInsideTriangle(x1, z1, x2, z2, x3, z3, x, z)
-	-- Calculate the total area of the triangle
-	local totalArea = calculateArea(x1, z1, x2, z2, x3, z3)
-
-	-- Calculate the area of three sub-triangles formed by the point and the triangle vertices
-	local area1 = calculateArea(x, z, x2, z2, x3, z3)
-	local area2 = calculateArea(x1, z1, x, z, x3, z3)
-	local area3 = calculateArea(x1, z1, x2, z2, x, z)
-
-	-- If the sum of the areas of the sub-triangles equals the total area, the point is inside the triangle
-	return (totalArea == area1 + area2 + area3)
-end
-
-function castray(origin, direction)
-    --print(walls)
-	local rayDirection = CFrame.lookAt(HRP.Position, Vector3.new(direction.Position.X, origin.Y, direction.Position.Z))
-    --print(origin, "OG")
-    --print(direction.Position, "DP")
-	local raycastParams = RaycastParams.new()
-	raycastParams.FilterDescendantsInstances = {walls}
-	raycastParams.FilterType = Enum.RaycastFilterType.Include
-	raycastParams.IgnoreWater = true
-
-	local raycastResult = workspace:Raycast(HRP.Position, rayDirection.LookVector * 500, raycastParams)
-    if raycastResult == nil then
-        print("ITS NIL FOR SOME REASON")
-    else 
-        print(raycastResult.Position, "RP")
-    end
-    return raycastResult.Position
-end
-
-function antiBlock(tempArray, tempPlayerArray) -- tempArray = position of possible spots
-    local finalArray = {}
-    local finalplayerArray = {}
-    local jumpingPlayers = findJumpingPlayers()
-    if #jumpingPlayers ~= 0 then 
-        for _, v in ipairs(jumpingPlayers) do
-            local blockHitboxCF = v.Character.BlockHitbox.CFrame
-            local size = v.Character.BlockHitbox.Size
-
-            local directLeft = (blockHitboxCF - blockHitboxCF.RightVector * size.X/2)
-            local backLeft = (directLeft - blockHitboxCF.LookVector * size.X/2)
-            local frontLeft = (directLeft + blockHitboxCF.LookVector * size.X/2)
-
-            local directRight = (blockHitboxCF + blockHitboxCF.RightVector * size.X/2)
-            local backRight = (directRight - blockHitboxCF.LookVector * size.X/2)
-            local frontRight = (directRight + blockHitboxCF.LookVector * size.X/2)
-
-            local t1 = HRP.Position
-            local t2 = castray(HRP.Position, backLeft)
-            local t3 = castray(HRP.Position, frontRight)
-            local t4 = castray(HRP.Position, backRight)
-            local t5 = castray(HRP.Position, frontLeft)
-            local t6
-            for _, u in ipairs(tempArray) do
-                t6 = u.Position
-                --print(t6.. "t6")
-                if not isInsideTriangle(t1.X, t1.Z, t2.X, t2.Z, t3.X, t3.Z, t6.X, t6.Z) and not isInsideTriangle(t1.X, t1.Z, t4.X, t4.Z, t5.X, t5.Z, t6.X, t6.Z) then
-                    table.insert(finalArray, u)
-                else
-                    u.BrickColor = BrickColor.new(21)
-                end
-            end
-            for i, u in ipairs(tempPlayerArray) do
-                if u ~= v then
-                    table.insert(finalplayerArray, u)
-                end
-            end
-        end
-        return finalArray, finalplayerArray
+function bumpMatch(code)
+    if code:match("b") then
+        virtualUser:ClickButton1(Vector2.new())
+        wait(1)
+        player.Character.Humanoid.AutoRotate = true
     else
-        return tempArray, tempPlayerArray
+        virtualUser:TypeKey("0x66")
+        wait(1)
+        player.Character.Humanoid.AutoRotate = true
     end
 end
 
-
-
-
-function castray2(origin, direction)
-    --print(walls)
-	local rayDirection = CFrame.lookAt(origin.Position.Value, Vector3.new(direction.Position.X, origin.Y, direction.Position.Z))
-    --print(origin, "OG")
-    --print(direction.Position, "DP")
-	local raycastParams = RaycastParams.new()
-	raycastParams.FilterDescendantsInstances = {walls}
-	raycastParams.FilterType = Enum.RaycastFilterType.Include
-	raycastParams.IgnoreWater = true
-
-	local raycastResult = workspace:Raycast(origin.Position.Value, rayDirection.LookVector * 500, raycastParams)
-    if raycastResult == nil then
-        print("ITS NIL FOR SOME REASON")
-    else 
-        print(raycastResult.Position, "RP")
-    end
-    return raycastResult.Position
-end
-
-function antiBlock2(tempArray, origin, tempPlayerArray) -- tempArray = position of possible spots
-    local finalArray = {}
-    local finalplayerArray = {}
-    local jumpingPlayers = findJumpingPlayers()
-    if #jumpingPlayers ~= 0 then 
-        for _, v in ipairs(jumpingPlayers) do
-            local blockHitboxCF = v.Character.BlockHitbox.CFrame
-            local size = v.Character.BlockHitbox.Size
-            local directLeft = (blockHitboxCF - blockHitboxCF.RightVector * size.X/2)
-            local backLeft = (directLeft - blockHitboxCF.LookVector * size.X/2)
-            local frontLeft = (directLeft + blockHitboxCF.LookVector * size.X/2)
-
-            local directRight = (blockHitboxCF + blockHitboxCF.RightVector * size.X/2)
-            local backRight = (directRight - blockHitboxCF.LookVector * size.X/2)
-            local frontRight = (directRight + blockHitboxCF.LookVector * size.X/2)
-            local t1 = origin.Position.Value
-            local t2 = castray2(origin, backLeft)
-            local t3 = castray2(origin, frontRight)
-            local t4 = castray2(origin, backRight)
-            local t5 = castray2(origin, frontLeft)
-            local t6
-            for _, u in ipairs(tempArray) do
-                t6 = u.Position
-                --print(t6.. "t6")
-                if not isInsideTriangle(t1.X, t1.Z, t2.X, t2.Z, t3.X, t3.Z, t6.X, t6.Z) and not isInsideTriangle(t1.X, t1.Z, t4.X, t4.Z, t5.X, t5.Z, t6.X, t6.Z) then
-                    table.insert(finalArray, u)
-                else
-                    u.BrickColor = BrickColor.new(21)
-                end
-            end
-            for i, u in ipairs(tempPlayerArray) do
-                if u ~= v then
-                    table.insert(finalplayerArray, u)
-                end
-            end
-        end
-        return finalArray, finalplayerArray
-    else
-        return tempArray, tempPlayerArray
-    end
+function spikemacro()
+    keypress(0x10)
+    wait(0.001)
+    keyrelease(0x10)
+    keypress(0x20)
+    wait(0.001)
+    keyrelease(0x20)
+    keypress(0x43)
+    wait(0.001)
+    keyrelease(0x43)
 end
