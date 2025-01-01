@@ -957,10 +957,10 @@ function antiBlock2(tempArray, origin, tempPlayerArray) -- tempArray = position 
             local backRight = (directRight - blockHitboxCF.LookVector * size.X/2)
             local frontRight = (directRight + blockHitboxCF.LookVector * size.X/2)
             local t1 = origin.Position.Value
-            local t2 = castray2(origin, backLeft)
-            local t3 = castray2(origin, frontRight)
-            local t4 = castray2(origin, backRight)
-            local t5 = castray2(origin, frontLeft)
+            local t2 = castray2(origin.Position.Value, backLeft)
+            local t3 = castray2(origin.Position.Value, frontRight)
+            local t4 = castray2(origin.Position.Value, backRight)
+            local t5 = castray2(origin.Position.Value, frontLeft)
             local t6
             for _, u in ipairs(tempArray) do
                 t6 = u.Position
