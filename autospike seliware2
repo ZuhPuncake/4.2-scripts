@@ -924,7 +924,7 @@ end
 
 function castray2(origin, direction)
     --print(walls)
-	local rayDirection = CFrame.lookAt(origin.Position.Value, Vector3.new(direction.Position.X, origin.Y, direction.Position.Z))
+	local rayDirection = CFrame.lookAt(origin, Vector3.new(direction.Position.X, origin.Y, direction.Position.Z))
     --print(origin, "OG")
     --print(direction.Position, "DP")
 	local raycastParams = RaycastParams.new()
@@ -932,7 +932,7 @@ function castray2(origin, direction)
 	raycastParams.FilterType = Enum.RaycastFilterType.Include
 	raycastParams.IgnoreWater = true
 
-	local raycastResult = workspace:Raycast(origin.Position.Value, rayDirection.LookVector * 500, raycastParams)
+	local raycastResult = workspace:Raycast(origin, rayDirection.LookVector * 500, raycastParams)
     if raycastResult == nil then
         print("ITS NIL FOR SOME REASON")
     else 
