@@ -695,6 +695,6 @@ function autoBlockVelocity(currentXVelocity, ballPosition)
         addon = ((currentXVelocity/currentXVelocity) * 3)
     end
     finalVelocity = currentXVelocity + Xdisplacement + addon
-    HRP.Velocity = Vector3.new(finalVelocity, 0, teamSide * 20)
+    HRP.Velocity = Vector3.new(finalVelocity, 0, teamSide * -20)
     addon = 0
 end
