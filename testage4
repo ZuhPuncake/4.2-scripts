@@ -320,7 +320,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                 dot.Color = Color3.fromRGB(255, 0, 0)
                 reacting = false
             end
-        elseif input.KeyCode == Enum.KeyCode.CapsLock then
+        elseif input.KeyCode == Enum.KeyCode.J then
             if reacting == false then 
                 reacting = true
                 dot.Color = Color3.fromRGB(0, 255, 0)
