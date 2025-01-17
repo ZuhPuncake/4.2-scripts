@@ -265,7 +265,10 @@ end
 
 
 -- Input Handler
-UIS.InputBegan:Connect(function(input) --Best way to do this
+UIS.InputBegan:Connect(function(input, gameProcessedEvent) --Best way to do this
+    if gameProcessedEvent then
+        return
+    end
     if input.KeyCode == Enum.KeyCode.V then
         if teamSide == 1 then
             ididathing(ovParams)
