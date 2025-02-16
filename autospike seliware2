@@ -538,7 +538,7 @@ function ididathing(tempParams)
         v.Transparency = 1
     end
     farthestPart.Transparency = 1
-    local farthestPart = nil
+    farthestPart = nil
     local farthestDistance = nil
     longin = {}
     longout = {}
@@ -713,7 +713,7 @@ function glideSpike(tempParams)
         v.Transparency = 1
     end
     farthestPart.Transparency = 1
-    local farthestPart = nil
+    farthestPart = nil
     local farthestDistance = nil
     longin = {}
     longout = {}
