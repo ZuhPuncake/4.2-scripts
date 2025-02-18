@@ -247,11 +247,28 @@ local function jumpTowardsTarget(player, targetPosition)
     player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
 end
 
+local function jumpTowardsTarget2(player, targetPosition)
+    -- Calculate the direction from player's current position to the target position
+    local direction = (targetPosition - player.Character.HumanoidRootPart.Position).unit
+
+    -- Set the jump power (adjust this value as needed)
+    local jumpPower = 30
+
+    -- Calculate the jump velocity based on direction and jump power
+    local jumpVelocity = direction * jumpPower
+
+    -- Apply the jump velocity to the player's HumanoidRootPart
+    player.Character.HumanoidRootPart.Velocity = Vector3.new(jumpVelocity.X, 0, jumpVelocity.Z)
+end
+
 
 
 
 -- Input Handler
-UIS.InputBegan:Connect(function(input) --Best way to do this
+UIS.InputBegan:Connect(function(input, gameProcessedEvent) --Best way to do this
+    if gameProcessedEvent then
+        return
+    end
     if input.KeyCode == Enum.KeyCode.V then
         if teamSide == 1 then
             ididathing(ovParams)
@@ -521,7 +538,7 @@ function ididathing(tempParams)
         v.Transparency = 1
     end
     farthestPart.Transparency = 1
-    local farthestPart = nil
+    farthestPart = nil
     local farthestDistance = nil
     longin = {}
     longout = {}
@@ -538,20 +555,41 @@ function glideSpike(tempParams)
     local ballPrediction
     setCurrentBall()
     ballPrediction = predictBallPosition()
-    local longin = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 48 + tonumber(math.abs(ballPrediction.Z)), tempParams)
-    local longout = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 45 + tonumber(math.abs(ballPrediction.Z)), tempParams)
-    local midlongin = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 42, tempParams)
-    local midlongout = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 39, tempParams)
-    local midin = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 36, tempParams)
-    local midout = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 33, tempParams)
-    --local shortin = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 24, tempParams)
-    --local shortout = workspace:GetPartBoundsInRadius(Vector3.new(ballPrediction.X, 1, ballPrediction.Z), 19, tempParams)
+    local longin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 48 + tonumber(math.abs(currentBall.Position.Value.Z)), tempParams)
+    local longout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 45 + tonumber(math.abs(currentBall.Position.Value.Z)), tempParams)
+
+    local newmidlongin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 44.5, tempParams)
+    local newmidlongout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 42.5, tempParams)
+
+    local midlongin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 42, tempParams)
+    local midlongout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 39, tempParams)
+
+    local newmidin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 38, tempParams)
+    local newmidout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 36, tempParams)
+
+    local midin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 35, tempParams)
+    local midout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 32, tempParams)
+
+    local shortmidin2 = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 31.5, tempParams)
+    local shortmidout2 = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 29, tempParams)
+
+    local shortmidin1 = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 28, tempParams)
+    local shortmidout1 = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 25, tempParams)
+
+    local shortin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 24, tempParams)
+    local shortout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 19, tempParams)
     local bumpnetNetout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, 1), tempParams)
-    local netout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, (2 * tonumber(math.abs(ballPrediction.Z))) - 1), tempParams)
+    local netout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, (2 * tonumber(math.abs(currentBall.Position.Value.Z))) - 1), tempParams)
     for i, v in pairs(longin) do
         v.BrickColor = BrickColor.new(37)
     end
     for i, v in pairs(longout) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    for i, v in pairs(newmidlongin) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(newmidlongout) do
         v.BrickColor = BrickColor.new(21)
     end
     for i, v in pairs(midlongin) do
@@ -560,18 +598,36 @@ function glideSpike(tempParams)
     for i, v in pairs(midlongout) do
         v.BrickColor = BrickColor.new(21)
     end
+    for i, v in pairs(newmidin) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(newmidout) do
+        v.BrickColor = BrickColor.new(21)
+    end
     for i, v in pairs(midin) do
         v.BrickColor = BrickColor.new(37)
     end
     for i, v in pairs(midout) do
         v.BrickColor = BrickColor.new(21)
     end
-    --[[for i, v in pairs(shortin) do
+    for i, v in pairs(shortmidin2) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(shortmidout2) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    for i, v in pairs(shortmidin1) do
+        v.BrickColor = BrickColor.new(37)
+    end
+    for i, v in pairs(shortmidout1) do
+        v.BrickColor = BrickColor.new(21)
+    end
+    for i, v in pairs(shortin) do
         v.BrickColor = BrickColor.new(37)
     end
     for i, v in pairs(shortout) do
         v.BrickColor = BrickColor.new(21)
-    end]]--
+    end
     for i, v in pairs(netout) do
         v.BrickColor = BrickColor.new(21)
     end
@@ -583,6 +639,7 @@ function glideSpike(tempParams)
     for i, v in pairs(longin) do
         if v.BrickColor == BrickColor.new(37) then
             table.insert(possibleSpots, v)
+            v.Transparency = 0.8
         end
     end
 
@@ -594,33 +651,49 @@ function glideSpike(tempParams)
     for i, v in ipairs(playersArray) do
         table.insert(tempPlayerArray, v)
     end
-    local finalArray, finalplayerArray = antiBlock2(tempArray, ballPrediction, tempPlayerArray)
+    local finalArray, finalplayerArray = antiBlock2(tempArray, currentBall, tempPlayerArray)
     farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
     farthestPart.BrickColor = BrickColor.new(1)
     farthestPart.Transparency = 0
     
     -- Tilt Handler
     local tilt
-    if findDistance(farthestPart, player) < 26 then
+    if findDistance2(farthestPart, currentBall) < 26 then
         tilt = true
-    elseif findDistance(farthestPart, player) < 38 then
+    elseif findDistance2(farthestPart, currentBall) < 29 then
+        tilt = true
+        HRP.Tilt.D = 300
+        HRP.Tilt.P = 1400
+    elseif findDistance2(farthestPart, currentBall) < 32 then
+        tilt = true
+        HRP.Tilt.D = 300
+        HRP.Tilt.P = 1100
+    elseif findDistance2(farthestPart, currentBall) < 36 then
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 800
-    elseif findDistance(farthestPart, player) < 44 then
+    elseif findDistance2(farthestPart, currentBall) < 38 then
+        tilt = true
+        HRP.Tilt.D = 300
+        HRP.Tilt.P = 550
+    elseif findDistance2(farthestPart, currentBall) < 42.5 then
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 300
+    elseif findDistance2(farthestPart, currentBall) < 44 then
+        tilt = true
+        HRP.Tilt.D = 300
+        HRP.Tilt.P = 150
     end
 
     -- Spike Inputs
     keypress(0x43)
     wait(0.01)
     --HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(farthestPart.Position.X, HRP.Position.Y, farthestPart.Position.Z)) -- AIM
-    local direction = (Vector3.new(farthestPart.Position.X, 0, farthestPart.Position.Z) - (Vector3.new(ballPrediction.X, 0, ballPrediction.Z))).unit
-    local targPosition = Vector3.new(ballPrediction.X, HRP.Position.Y, ballPrediction.Z)
+    local direction = (Vector3.new(farthestPart.Position.X, 0, farthestPart.Position.Z) - (Vector3.new(currentBall.Position.Value.X, 0, currentBall.Position.Value.Z))).unit
+    local targPosition = Vector3.new(currentBall.Position.Value.X, HRP.Position.Y, currentBall.Position.Value.Z)
     HRP.CFrame = CFrame.lookAlong(HRP.Position, direction)
-    jumpTowardsTarget(player, targPosition)
+    jumpTowardsTarget2(player, targPosition)
     keypress(0x20)  -- JUMP
     wait(0.01)
     keyrelease(0x43)
@@ -637,9 +710,10 @@ function glideSpike(tempParams)
     player.Character.Humanoid.AutoRotate = true
     for i, v in pairs(longin) do
         v.BrickColor = BrickColor.new(21)
+        v.Transparency = 1
     end
     farthestPart.Transparency = 1
-    local farthestPart = nil
+    farthestPart = nil
     local farthestDistance = nil
     longin = {}
     longout = {}
@@ -677,6 +751,11 @@ end)
 function findDistance(spot, plr)
     --print(math.sqrt(((plr.Character.HumanoidRootPart.Position.X - spot.Position.X)^2) + ((plr.Character.HumanoidRootPart.Position.Z - spot.Position.Z)^2)))
     return math.sqrt(((plr.Character.HumanoidRootPart.Position.X - spot.Position.X)^2) + ((plr.Character.HumanoidRootPart.Position.Z - spot.Position.Z)^2))
+end
+
+function findDistance2(spot, plr)
+    --print(math.sqrt(((plr.Character.HumanoidRootPart.Position.X - spot.Position.X)^2) + ((plr.Character.HumanoidRootPart.Position.Z - spot.Position.Z)^2)))
+    return math.sqrt(((plr.Position.Value.X - spot.Position.X)^2) + ((plr.Position.Value.Z - spot.Position.Z)^2))
 end
 
 
@@ -749,11 +828,27 @@ function findJumpingPlayers()
     for _, v in ipairs(Players:GetPlayers()) do
         if v.TeamColor ~= player.TeamColor then
             if isJumping(v) then
-                table.insert(jumpingPlayers, v)
+                if not v.Character.HumanoidRootPart.Position.Y < 7.2 and v.Character.HumanoidRootPart.Velocity.Y > 0 then
+                    table.insert(jumpingPlayers, v)
+                end
             end
         end
     end
     return jumpingPlayers
+end
+
+function findIgnoreablePlayers()
+    local ignoreablePlayers = {}
+    for _, v in ipairs(Players:GetPlayers()) do
+        if v.TeamColor ~= player.TeamColor then
+            if isJumping(v) then
+                if v.Character.HumanoidRootPart.Position.Y < 7.2 and v.Character.HumanoidRootPart.Velocity.Y < 0 then
+                    table.insert(ignoreablePlayers, v)
+                end
+            end
+        end
+    end
+    return ignoreablePlayers
 end
 
 --[[function findJumpers()
@@ -803,6 +898,7 @@ function antiBlock(tempArray, tempPlayerArray) -- tempArray = position of possib
     local finalArray = {}
     local finalplayerArray = {}
     local jumpingPlayers = findJumpingPlayers()
+    local ignoreablePlayers = findIgnoreablePlayers()
     if #jumpingPlayers ~= 0 then 
         for _, v in ipairs(jumpingPlayers) do
             local blockHitboxCF = v.Character.BlockHitbox.CFrame
@@ -837,6 +933,12 @@ function antiBlock(tempArray, tempPlayerArray) -- tempArray = position of possib
                 end
             end
         end
+        for i = finalplayerArray, 1, -1 do
+            local playerToCheck = finalplayerArray[i]
+            if table.find(ignoreablePlayers, playerToCheck) then
+                table.remove(finalplayerArray, i)
+            end
+        end
         return finalArray, finalplayerArray
     else
         return tempArray, tempPlayerArray
@@ -869,6 +971,7 @@ function antiBlock2(tempArray, origin, tempPlayerArray) -- tempArray = position 
     local finalArray = {}
     local finalplayerArray = {}
     local jumpingPlayers = findJumpingPlayers()
+    local ignoreablePlayers = findIgnoreablePlayers()
     if #jumpingPlayers ~= 0 then 
         for _, v in ipairs(jumpingPlayers) do
             local blockHitboxCF = v.Character.BlockHitbox.CFrame
@@ -880,11 +983,11 @@ function antiBlock2(tempArray, origin, tempPlayerArray) -- tempArray = position 
             local directRight = (blockHitboxCF + blockHitboxCF.RightVector * size.X/2)
             local backRight = (directRight - blockHitboxCF.LookVector * size.X/2)
             local frontRight = (directRight + blockHitboxCF.LookVector * size.X/2)
-            local t1 = origin
-            local t2 = castray2(origin, backLeft)
-            local t3 = castray2(origin, frontRight)
-            local t4 = castray2(origin, backRight)
-            local t5 = castray2(origin, frontLeft)
+            local t1 = origin.Position.Value
+            local t2 = castray2(origin.Position.Value, backLeft)
+            local t3 = castray2(origin.Position.Value, frontRight)
+            local t4 = castray2(origin.Position.Value, backRight)
+            local t5 = castray2(origin.Position.Value, frontLeft)
             local t6
             for _, u in ipairs(tempArray) do
                 t6 = u.Position
@@ -902,6 +1005,12 @@ function antiBlock2(tempArray, origin, tempPlayerArray) -- tempArray = position 
             end
         end
         return finalArray, finalplayerArray
+        for i = finalplayerArray, 1, -1 do
+            local playerToCheck = finalplayerArray[i]
+            if table.find(ignoreablePlayers, playerToCheck) then
+                table.remove(finalplayerArray, i)
+            end
+        end
     else
         return tempArray, tempPlayerArray
     end
