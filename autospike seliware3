@@ -105,8 +105,8 @@ local walls = game.Workspace:FindFirstChild("Walls")
 
 -- Side Picker (Auto Block)
 function sidePicker()
-    for i = 0, 24, 2 do
-        for j = 1, 47, 2 do
+    for i = 0, 24, 1 do
+        for j = 1, 47, 1 do
             local part1 = Instance.new("Part", indicators)
             part1.Name = "indicator"
             part1.Anchored = true
@@ -132,8 +132,8 @@ function sidePicker()
             table.insert(indicatorsArray, part2)
         end
     end
-    for i = 0, 24, 2 do
-        for j = -1, -47, -2 do
+    for i = 0, 24, 1 do
+        for j = -1, -47, -1 do
             local part3 = Instance.new("Part", indicators2)
             part3.Name = "indicator"
             part3.Anchored = true
@@ -828,7 +828,7 @@ function findJumpingPlayers()
     for _, v in ipairs(Players:GetPlayers()) do
         if v.TeamColor ~= player.TeamColor then
             if isJumping(v) then
-                if not v.Character.HumanoidRootPart.Position.Y < 7.2 and v.Character.HumanoidRootPart.Velocity.Y > 0 then
+                if not (v.Character.HumanoidRootPart.Position.Y < 7.2) and v.Character.HumanoidRootPart.Velocity.Y > 0 then
                     table.insert(jumpingPlayers, v)
                 end
             end
@@ -933,7 +933,7 @@ function antiBlock(tempArray, tempPlayerArray) -- tempArray = position of possib
                 end
             end
         end
-        for i = finalplayerArray, 1, -1 do
+        for i = #finalplayerArray, 1, -1 do
             local playerToCheck = finalplayerArray[i]
             if table.find(ignoreablePlayers, playerToCheck) then
                 table.remove(finalplayerArray, i)
@@ -1004,13 +1004,13 @@ function antiBlock2(tempArray, origin, tempPlayerArray) -- tempArray = position 
                 end
             end
         end
-        return finalArray, finalplayerArray
-        for i = finalplayerArray, 1, -1 do
+        for i = #finalplayerArray, 1, -1 do
             local playerToCheck = finalplayerArray[i]
             if table.find(ignoreablePlayers, playerToCheck) then
                 table.remove(finalplayerArray, i)
             end
         end
+	return finalArray, finalplayerArray
     else
         return tempArray, tempPlayerArray
     end
