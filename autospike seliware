@@ -48,8 +48,9 @@ ovParams2.MaxParts = 0
 
 -- Walls Creation
 local function wallsCreation()
-    local wallsFolder = Instance.new("Folder", game:GetService("Workspace"))
+	local wallsFolder = Instance.new("Folder", game:GetService("Workspace"))
     wallsFolder.Name = "Walls"
+    local wallTransparency = 1
 
     local part1 = Instance.new("Part", game.Workspace.Walls)
     part1.Name = "wall"
@@ -58,9 +59,9 @@ local function wallsCreation()
     part1.Shape = Enum.PartType.Block
     part1.BrickColor = BrickColor.new(21)
     part1.Material = Enum.Material.Neon
-    part1.Transparency = 1
-    part1.Size = Vector3.new(1, 300, 103)
-    part1.Position = Vector3.new(30, 0, 0)
+    part1.Transparency = wallTransparency
+    part1.Size = Vector3.new(1, 300, 300)
+    part1.Position = Vector3.new(90, 0, 0)
 
     local part2 = Instance.new("Part", game.Workspace.Walls)
     part2.Name = "wall"
@@ -69,9 +70,9 @@ local function wallsCreation()
     part2.Shape = Enum.PartType.Block
     part2.BrickColor = BrickColor.new(21)
     part2.Material = Enum.Material.Neon
-    part2.Transparency = 1
-    part2.Size = Vector3.new(62, 300, 1)
-    part2.Position = Vector3.new(0, 0, 52)
+    part2.Transparency = wallTransparency
+    part2.Size = Vector3.new(180, 300, 1)
+    part2.Position = Vector3.new(0, 0, 150)
 
     local part3 = Instance.new("Part", game.Workspace.Walls)
     part3.Name = "wall"
@@ -80,9 +81,9 @@ local function wallsCreation()
     part3.Shape = Enum.PartType.Block
     part3.BrickColor = BrickColor.new(21)
     part3.Material = Enum.Material.Neon
-    part3.Transparency = 1
-    part3.Size = Vector3.new(1, 300, 103)
-    part3.Position = Vector3.new(-30, 0, 0)
+    part3.Transparency = wallTransparency
+    part3.Size = Vector3.new(1, 300, 300)
+    part3.Position = Vector3.new(-90, 0, 0)
 
     local part4 = Instance.new("Part", game.Workspace.Walls)
     part4.Name = "wall"
@@ -91,9 +92,9 @@ local function wallsCreation()
     part4.Shape = Enum.PartType.Block
     part4.BrickColor = BrickColor.new(21)
     part4.Material = Enum.Material.Neon
-    part4.Transparency = 1
-    part4.Size = Vector3.new(62, 300, 1)
-    part4.Position = Vector3.new(0, 0, -52)
+    part4.Transparency = wallTransparency
+    part4.Size = Vector3.new(180, 300, 1)
+    part4.Position = Vector3.new(0, 0, -150)
 end
 
 wallsCreation()
@@ -828,9 +829,7 @@ function findJumpingPlayers()
     for _, v in ipairs(Players:GetPlayers()) do
         if v.TeamColor ~= player.TeamColor then
             if isJumping(v) then
-                if not (v.Character.HumanoidRootPart.Position.Y < 7.2) and v.Character.HumanoidRootPart.Velocity.Y > 0 then
-                    table.insert(jumpingPlayers, v)
-                end
+                table.insert(jumpingPlayers, v)
             end
         end
     end
@@ -885,7 +884,7 @@ function castray(origin, direction)
 	raycastParams.FilterType = Enum.RaycastFilterType.Include
 	raycastParams.IgnoreWater = true
 
-	local raycastResult = workspace:Raycast(HRP.Position, rayDirection.LookVector * 500, raycastParams)
+	local raycastResult = workspace:Raycast(HRP.Position, rayDirection.LookVector * 600, raycastParams)
     if raycastResult == nil then
         print("ITS NIL FOR SOME REASON")
     else 
@@ -958,7 +957,7 @@ function castray2(origin, direction)
 	raycastParams.FilterType = Enum.RaycastFilterType.Include
 	raycastParams.IgnoreWater = true
 
-	local raycastResult = workspace:Raycast(origin, rayDirection.LookVector * 500, raycastParams)
+	local raycastResult = workspace:Raycast(origin, rayDirection.LookVector * 600, raycastParams)
     if raycastResult == nil then
         print("ITS NIL FOR SOME REASON")
     else 
