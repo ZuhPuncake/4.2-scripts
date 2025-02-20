@@ -841,7 +841,7 @@ function findIgnoreablePlayers()
     for _, v in ipairs(Players:GetPlayers()) do
         if v.TeamColor ~= player.TeamColor then
             if isJumping(v) then
-                if v.Character.HumanoidRootPart.Position.Y < 7.2 and v.Character.HumanoidRootPart.Velocity.Y < 0 then
+                if v.Character.HumanoidRootPart.Position.Y < 6 and v.Character.HumanoidRootPart.Velocity.Y < 0 then
                     table.insert(ignoreablePlayers, v)
                 end
             end
