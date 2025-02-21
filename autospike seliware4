@@ -453,7 +453,7 @@ function ididathing(tempParams)
     for i, v in pairs(netout) do
         v.BrickColor = BrickColor.new(21)
     end
-    if currentBall and currentBall.Position.Value.Z > 0.4 and currentBall.Position.Value.Z < -0.4 then
+    if currentBall and currentBall.Position.Value.Z > 0.36 and currentBall.Position.Value.Z < -0.36 then
         for i, v in pairs(bumpnetNetout) do
             v.BrickColor = BrickColor.new(21)
         end
@@ -632,7 +632,7 @@ function glideSpike(tempParams)
     for i, v in pairs(netout) do
         v.BrickColor = BrickColor.new(21)
     end
-    if currentBall and currentBall.Position.Value.Z > 0.4 and currentBall.Position.Value.Z < -0.4 then
+    if currentBall and currentBall.Position.Value.Z > 0.36 and currentBall.Position.Value.Z < -0.36 then
         for i, v in pairs(bumpnetNetout) do
             v.BrickColor = BrickColor.new(21)
         end
