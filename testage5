@@ -177,15 +177,19 @@ function ESP_API2.travelLine(ball)
     local d
     d = RS.Stepped:Connect(function()
         if ball:IsDescendantOf(Workspace) and ball ~= nil and ball.Position ~= nil and ball.Position.Value ~= nil then
-
+	    local ballHeight
             local currentXVelocity = ball.Velocity.Value.X
             local currentZVelocity = ball.Velocity.Value.Z
             if currentXVelocity ~= previousXVelocity or currentZVelocity ~= previousZVelocity then
+		ballHeight = ball.Position.Value.Y
                 previousXVelocity = currentXVelocity
                 previousZVelocity = currentZVelocity
                 landingSpot = predictBallLanding2(ball)
             end
-            local ballpos, vis = Camera:WorldToViewportPoint(Vector3.new(ball.Position.Value.X, 0.5, ball.Position.Value.Z))
+	    if ballHeight < 21 then
+		ballHeight = 0.5
+	    end
+            local ballpos, vis = Camera:WorldToViewportPoint(Vector3.new(ball.Position.Value.X, ballHeight, ball.Position.Value.Z))
             --local _, vis_check = Camera:WorldToViewportPoint()
             local dirpos = Camera:WorldToViewportPoint(Vector3.new(landingSpot.X, 0.5, landingSpot.Z))
             viewTracer.From = v2(ballpos.X, ballpos.Y)
