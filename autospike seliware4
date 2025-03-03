@@ -559,14 +559,14 @@ function glideSpike(tempParams)
     local longin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 48 + tonumber(math.abs(currentBall.Position.Value.Z)), tempParams)
     local longout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 45 + tonumber(math.abs(currentBall.Position.Value.Z)), tempParams)
 
-    local newmidlongin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 44.5, tempParams)
-    local newmidlongout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 42.5, tempParams)
+    local newmidlongin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 45, tempParams)
+    local newmidlongout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 43, tempParams)
 
-    local midlongin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 42, tempParams)
-    local midlongout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 39, tempParams)
+    local midlongin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 42.5, tempParams)
+    local midlongout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 39.5, tempParams)
 
-    local newmidin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 38, tempParams)
-    local newmidout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 36, tempParams)
+    local newmidin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 38.5, tempParams)
+    local newmidout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 36.5, tempParams)
 
     local midin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 35, tempParams)
     local midout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 32, tempParams)
