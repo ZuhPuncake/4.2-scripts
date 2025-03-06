@@ -169,7 +169,7 @@ end
 
 function ESP_API2.travelLine(ball)
     repeat wait() until ball ~= nil and ball.Position ~= nil and ball.Position.Value ~= nil
-    local viewTracer = ESP_API2.NewLine({Color = RGB(0, 255, 255), Thickness = 2})
+    local viewTracer = ESP_API2.NewLine({Color = RGB(0, 255, 255), Thickness = 5})
 
     local previousVelocity = ball:WaitForChild("Velocity")
     local previousXVelocity = previousVelocity.Value.X
