@@ -481,10 +481,10 @@ function ididathing(tempParams)
     -- Tilt Handler
     local tilt
     local pwr13 = false
-    if findDistance(farthestPart, player) < 20 then
+    if findDistance(farthestPart, player) < 21.5 then
         tilt = true
         pwr13 = true
-    elseif findDistance(farthestPart, player) < 26 then
+    elseif findDistance(farthestPart, player) < 25 then
         tilt = true
     elseif findDistance(farthestPart, player) < 29 then
         tilt = true
@@ -494,19 +494,19 @@ function ididathing(tempParams)
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 1100
-    elseif findDistance(farthestPart, player) < 36 then
+    elseif findDistance(farthestPart, player) < 36.5 then
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 800
-    elseif findDistance(farthestPart, player) < 38 then
+    elseif findDistance(farthestPart, player) < 39.5 then
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 550
-    elseif findDistance(farthestPart, player) < 42.5 then
+    elseif findDistance(farthestPart, player) < 43 then
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 300
-    elseif findDistance(farthestPart, player) < 44 then
+    elseif findDistance(farthestPart, player) < 45 then
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 150
@@ -671,10 +671,10 @@ function glideSpike(tempParams)
     -- Tilt Handler
     local tilt
     local pwr13 = false
-    if findDistance2(farthestPart, currentBall) < 20 then
+    if findDistance2(farthestPart, currentBall) < 21.5 then
         tilt = true
         pwr13 = true
-    elseif findDistance2(farthestPart, currentBall) < 26 then
+    elseif findDistance2(farthestPart, currentBall) < 25 then
         tilt = true
     elseif findDistance2(farthestPart, currentBall) < 29 then
         tilt = true
@@ -684,19 +684,19 @@ function glideSpike(tempParams)
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 1100
-    elseif findDistance2(farthestPart, currentBall) < 36 then
+    elseif findDistance2(farthestPart, currentBall) < 36.5 then
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 800
-    elseif findDistance2(farthestPart, currentBall) < 38 then
+    elseif findDistance2(farthestPart, currentBall) < 39.5 then
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 550
-    elseif findDistance2(farthestPart, currentBall) < 42.5 then
+    elseif findDistance2(farthestPart, currentBall) < 43 then
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 300
-    elseif findDistance2(farthestPart, currentBall) < 44 then
+    elseif findDistance2(farthestPart, currentBall) < 45 then
         tilt = true
         HRP.Tilt.D = 300
         HRP.Tilt.P = 150
