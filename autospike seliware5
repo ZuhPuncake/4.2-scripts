@@ -284,7 +284,7 @@ UIS.InputBegan:Connect(function(input, gameProcessedEvent) --Best way to do this
         deepCut *= -1
     elseif input.KeyCode == Enum.KeyCode.R then
         rebound()
-    elseif input.KeyCode == Enum.KeyCode.F4 then
+    elseif input.KeyCode == Enum.KeyCode.N then
         if teamSide == 1 then 
             glideSpike(ovParams)
         elseif teamSide == -1 then
