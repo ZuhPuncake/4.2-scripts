@@ -530,7 +530,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         end
         if input.KeyCode == Enum.KeyCode.Two then
             deepCut *= -1
-        elseif input.KeyCode == Enum.KeyCode.N then
+        elseif input.KeyCode == Enum.KeyCode.M then
             local targPosition
             if teamSide == -1 then
                 HRP.Tilt.D = 350
