@@ -11,7 +11,7 @@ local GRAVITY = 50
 -- Create a marker to show the predicted landing position
 local Marker = Instance.new("Part")
 Marker.Name = "Marker"
-Marker.Size = Vector3.new(0.5, 14, 0.5)
+Marker.Size = Vector3.new(0.1, 14, 0.1)
 Marker.Shape = Enum.PartType.Block
 Marker.BrickColor = BrickColor.new("Really red")
 Marker.CanCollide = false
