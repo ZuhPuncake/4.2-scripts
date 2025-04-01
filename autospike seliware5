@@ -400,7 +400,7 @@ function ididathing(tempParams)
 
     local shortin = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 24, tempParams)
     local shortout = workspace:GetPartBoundsInRadius(Vector3.new(HRP.Position.X, 1, HRP.Position.Z), 19, tempParams)
-    local bumpnetNetout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, 1), tempParams)
+    local bumpnetNetout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, 2.5), tempParams)
     local netout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, (2 * tonumber(math.abs(HRP.Position.Z))) - 1), tempParams)
     for i, v in pairs(longin) do
         v.BrickColor = BrickColor.new(37)
@@ -590,7 +590,7 @@ function glideSpike(tempParams)
 
     local shortin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 24, tempParams)
     local shortout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 19, tempParams)
-    local bumpnetNetout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, 1), tempParams)
+    local bumpnetNetout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, 2.5), tempParams)
     local netout = workspace:GetPartBoundsInBox(CFrame.new(0, 0, 0), Vector3.new(48, 5, (2 * tonumber(math.abs(currentBall.Position.Value.Z))) - 1), tempParams)
     for i, v in pairs(longin) do
         v.BrickColor = BrickColor.new(37)
