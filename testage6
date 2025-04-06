@@ -533,7 +533,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         elseif input.KeyCode == Enum.KeyCode.M then
             local targPosition
             if teamSide == -1 then
-                HRP.Tilt.D = 350
+                HRP.Tilt.D = 400
                 HRP.Tilt.P = 2700
                 player.Character.Humanoid.AutoRotate = false
                 HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
@@ -569,7 +569,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                     keyrelease(0x43)
                 end
             else
-                HRP.Tilt.D = 350
+                HRP.Tilt.D = 400
                 HRP.Tilt.P = 2700
                 player.Character.Humanoid.AutoRotate = false
                 HRP.CFrame = CFrame.lookAt(HRP.Position, Vector3.new(HRP.Position.X, HRP.Position.Y, 0))
