@@ -1033,3 +1033,5 @@ function antiBlock2(tempArray, origin, tempPlayerArray) -- tempArray = position 
         return tempArray, tempPlayerArray
     end
 end
+
+HRP:FindFirstChild("TopHitbox").Transparency = 0.5
