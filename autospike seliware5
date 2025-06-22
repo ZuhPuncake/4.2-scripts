@@ -1034,4 +1034,4 @@ function antiBlock2(tempArray, origin, tempPlayerArray) -- tempArray = position 
     end
 end
 
-player:FindFirstChild("TopHitbox").Transparency = 0.5
+player.Character:FindFirstChild("TopHitbox").Transparency = 0.5
