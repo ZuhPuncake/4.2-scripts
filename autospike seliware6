@@ -579,9 +579,7 @@ end
 
 -- Glide AutoSpike
 function glideSpike(tempParams)
-    local ballPrediction
     setCurrentBall()
-    ballPrediction = predictBallPosition()
     local longin = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 48 + tonumber(math.abs(currentBall.Position.Value.Z)), tempParams)
     local longout = workspace:GetPartBoundsInRadius(Vector3.new(currentBall.Position.Value.X, 1, currentBall.Position.Value.Z), 45 + tonumber(math.abs(currentBall.Position.Value.Z)), tempParams)
 
