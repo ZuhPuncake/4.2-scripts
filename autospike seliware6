@@ -490,7 +490,7 @@ function ididathing(tempParams)
     local finalArray, finalplayerArray = antiBlock(tempArray, tempPlayerArray)
     finalarray = netBlocked(finalArray)
     farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
-    farthestPart.BrickColor = BrickColor.new(1)
+    --farthestPart.BrickColor = BrickColor.new(1)
     farthestPart.Transparency = 0
     
     -- Tilt Handler
@@ -681,7 +681,7 @@ function glideSpike(tempParams)
     local finalArray, finalplayerArray = antiBlock2(tempArray, currentBall, tempPlayerArray)
     finalArray = netBlocked(finalArray)
     farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
-    farthestPart.BrickColor = BrickColor.new(1)
+    --farthestPart.BrickColor = BrickColor.new(1)
     farthestPart.Transparency = 0
     
     -- Tilt Handler
