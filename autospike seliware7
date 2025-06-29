@@ -382,7 +382,7 @@ function glideBlockVelocity(currentXVelocity, ballPosition)
         addon = ((currentXVelocity/currentXVelocity) * 3)
     end
     finalVelocity = currentXVelocity + Xdisplacement + addon
-    HRP.Velocity = Vector3.new(finalVelocity, HRP.Velocity.Y, teamSide * -20)
+    HRP.Velocity = Vector3.new(finalVelocity, HRP.Velocity.Y, teamSide * 20)
     addon = 0
 end
 
