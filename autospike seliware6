@@ -488,7 +488,7 @@ function ididathing(tempParams)
         table.insert(tempPlayerArray, v)
     end
     local finalArray, finalplayerArray = antiBlock(tempArray, tempPlayerArray)
-    finalarray = netBlocked(finalArray)
+    finalArray = netBlocked(finalArray)
     farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
     --farthestPart.BrickColor = BrickColor.new(1)
     farthestPart.Transparency = 0
