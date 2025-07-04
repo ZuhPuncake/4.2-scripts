@@ -193,8 +193,8 @@ function ESP_API2.travelLine(ball)
             if negativeVelocity then
                 ballHeight = ball.Position.Value.Y
                 ballpos, vis = Camera:WorldToViewportPoint(Vector3.new(contactPoint.X, contactPoint.Y, contactPoint.Z))
-		viewTracer.Color = RGB(255, 0, 0)
-		viewTracer.Thickness = 10
+		viewTracer.Color = RGB(0, 255, 255)
+		viewTracer.Thickness = 15
             else
                 ballHeight = 0.5
                 ballpos, vis = Camera:WorldToViewportPoint(Vector3.new(ball.Position.Value.X, ballHeight, ball.Position.Value.Z))
