@@ -408,7 +408,7 @@ local function jumpTowardsTarget2(player, targetPosition)
     local direction = (targetPosition - player.Character.HumanoidRootPart.Position).unit
 
     -- Set the jump power (adjust this value as needed)
-    local jumpPower = 30
+    local jumpPower = 26
 
     -- Calculate the jump velocity based on direction and jump power
     local jumpVelocity = direction * jumpPower
