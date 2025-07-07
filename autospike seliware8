@@ -423,7 +423,7 @@ local function travelNeeded(O, S, d)       -- defender `d`
     --------------------------------------------------------------
     -- 1. Find t₀: earliest time segment is low enough to hitbox
     --------------------------------------------------------------
-    local t0 = (O.Y - d.topY) / (O.Y - S.Y)
+    local t0 = (13 - 6.25) / (13 - S.Y)
     t0 = math.clamp(t0, 0, 1)               -- stays in segment
 
     --------------------------------------------------------------
@@ -437,7 +437,7 @@ local function travelNeeded(O, S, d)       -- defender `d`
     --------------------------------------------------------------
     -- 3. Three t-values can be closest to defender
     --------------------------------------------------------------
-    local H = Vector2.new(d.pos.X, d.pos.Z)
+    local H = Vector2.new(d.Character.RecHitbox.Position.X, d.Character.RecHitbox.Position.Z)
 
     -- orthogonal projection of H onto OS
     local tProj = (H - O2):Dot(dir2) / len2
@@ -453,13 +453,13 @@ local function travelNeeded(O, S, d)       -- defender `d`
     --------------------------------------------------------------
     -- 4. How far must the defender slide?
     --------------------------------------------------------------
-    return math.max(0, best - d.radius)
+    return math.max(0, best - 4.25)
 end
 
-local function scoreSpot(S, defenders)
+local function scoreSpot(S, defenders, O)
     local worst = math.huge         -- we want the *closest* defender
     for _,d in ipairs(defenders) do
-        local gap = travelNeeded(O, S, d)
+        local gap = travelNeeded(O, S.Position, d)
         worst = math.min(worst, gap)
         if worst == 0 then break end  -- no need to continue
     end
@@ -689,7 +689,7 @@ function ididathing(tempParams)
     farthestPart = nil
     local bestScore = -math.huge
     for _, S in ipairs(finalArray) do
-        local s = scoreSpot(S, finalplayerArray)
+        local s = scoreSpot(S, finalplayerArray, HRP.Position)
         if s > bestScore then
             bestScore, farthestPart = s, S
         end
