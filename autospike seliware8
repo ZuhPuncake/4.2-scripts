@@ -875,8 +875,15 @@ function glideSpike(tempParams)
         table.insert(tempPlayerArray, v)
     end
     local finalArray, finalplayerArray = antiBlock2(tempArray, currentBall, tempPlayerArray)
-    --finalArray = netBlocked(finalArray)
-    farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
+    finalArray = netBlocked(finalArray)
+    --farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
+    local bestScore = -math.huge
+    for _, S in ipairs(finalArray) do
+        local s = scoreSpot(S, finalplayerArray, HRP.Position)
+        if s > bestScore then
+            bestScore, farthestPart = s, S
+        end
+    end
     --farthestPart.BrickColor = BrickColor.new(1)
     farthestPart.Transparency = 0
     
