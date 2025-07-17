@@ -875,11 +875,11 @@ function glideSpike(tempParams)
         table.insert(tempPlayerArray, v)
     end
     local finalArray, finalplayerArray = antiBlock2(tempArray, currentBall, tempPlayerArray)
-    finalArray = netBlocked(finalArray)
+    finalArray = netBlocked(finalArray, true)
     --farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
     local bestScore = -math.huge
     for _, S in ipairs(finalArray) do
-        local s = scoreSpot(S, finalplayerArray, HRP.Position)
+        local s = scoreSpot(S, finalplayerArray, currentBall.Position)
         if s > bestScore then
             bestScore, farthestPart = s, S
         end
@@ -968,9 +968,10 @@ function glideSpike(tempParams)
 end
 
 --  Anti Net Smash
-function netBlocked(spotsArray)
+function netBlocked(spotsArray, ballOrigin)
     local originHeight
     local finalArray = {}
+    local origin
     if currentBall.Velocity.Value.Y < 0 and currentBall.Position.Value.Y < 11 then
         originHeight = 14
     elseif currentBall.Velocity.Value.Y > 0 and currentBall.Position.Value.Y < 11 then
@@ -980,7 +981,11 @@ function netBlocked(spotsArray)
     elseif currentBall.Velocity.Value.Y < 0 and currentBall.Position.Value.Y > 11 then
         originHeight = currentBall.Position.Value.Y
     end
-    local origin = Vector3.new(HRP.Position.X, originHeight, HRP.Position.Z)
+    if ballOrigin == true then
+    	origin = Vector3.new(currentBall.Position.X, originHeight, currentBall.Position.Z)
+    else
+	origin = Vector3.new(HRP.Position.X, originHeight, HRP.Position.Z)
+    end
     for _, v in ipairs(spotsArray) do
         local direction = v.Position - origin
         local result = game.Workspace:Raycast(origin, direction, netParams)
