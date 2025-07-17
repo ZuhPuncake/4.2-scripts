@@ -972,9 +972,9 @@ function netBlocked(spotsArray)
     local originHeight
     local finalArray = {}
     if currentBall.Velocity.Value.Y < 0 and currentBall.Position.Value.Y < 11 then
-        originHeight = 13
+        originHeight = 14
     elseif currentBall.Velocity.Value.Y > 0 and currentBall.Position.Value.Y < 11 then
-        originHeight = 13
+        originHeight = 14
     elseif currentBall.Velocity.Value.Y > 0 and currentBall.Position.Value.Y > 11 then
         originHeight = currentBall.Position.Value.Y
     elseif currentBall.Velocity.Value.Y < 0 and currentBall.Position.Value.Y > 11 then
