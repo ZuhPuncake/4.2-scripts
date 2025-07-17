@@ -879,7 +879,7 @@ function glideSpike(tempParams)
     --farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
     local bestScore = -math.huge
     for _, S in ipairs(finalArray) do
-        local s = scoreSpot(S, finalplayerArray, currentBall.Position)
+        local s = scoreSpot(S, finalplayerArray, currentBall.Position.Value)
         if s > bestScore then
             bestScore, farthestPart = s, S
         end
@@ -982,7 +982,7 @@ function netBlocked(spotsArray, ballOrigin)
         originHeight = currentBall.Position.Value.Y
     end
     if ballOrigin == true then
-    	origin = Vector3.new(currentBall.Position.X, originHeight, currentBall.Position.Z)
+    	origin = Vector3.new(currentBall.Position.Value.X, originHeight, currentBall.Position.Value.Z)
     else
 	origin = Vector3.new(HRP.Position.X, originHeight, HRP.Position.Z)
     end
