@@ -684,7 +684,7 @@ function ididathing(tempParams)
         table.insert(tempPlayerArray, v)
     end
     local finalArray, finalplayerArray = antiBlock(tempArray, tempPlayerArray)
-    finalArray = netBlocked(finalArray)
+    finalArray = netBlocked(finalArray, false)
     --farthestFinder(finalArray, finalplayerArray) -- Find Farthest Part
     farthestPart = nil
     local bestScore = -math.huge
